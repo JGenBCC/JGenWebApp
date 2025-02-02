@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { signInWithGoogle } from '../lib/firebase/auth';
+//import { signInWithGoogle } from '../lib/firebase/auth';
+import { signInWithGoogle } from "@/src/lib/firebase/auth.js";
 
 export default function Home() {
   const message = process.env["MESSAGE"] || "Welcome to J-Gen Youth Group!";

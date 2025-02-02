@@ -1,16 +1,19 @@
 "use client"; 
 
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { signInWithGoogle } from '../lib/firebase/auth';
 //import { signInWithGoogle } from "@/src/lib/firebase/auth.js";
 
 export default function Home() {
+  const router = useRouter();
   const message = process.env["MESSAGE"] || "Welcome to J-Gen Youth Group!";
 
   const handleLogin = async () => {
     try {
       const response = await signInWithGoogle();
       console.log("Login Success:", response);
+      router.push("/user-info"); // Redirect to the user info page
     } catch (error) {
       console.log("Login Failed:", error);
     }

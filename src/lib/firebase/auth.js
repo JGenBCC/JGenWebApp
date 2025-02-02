@@ -7,7 +7,8 @@ import {
     onAuthStateChanged as _onAuthStateChanged,
     getAuth,
     getIdToken,
-    signInWithRedirect
+    signInWithRedirect,
+    getRedirectResult
 } from "firebase/auth";
 
 import { initializeApp } from "firebase/app";
@@ -22,18 +23,27 @@ export function onAuthStateChanged(cb) {
 export async function signInWithGoogle() {
     const provider = new GoogleAuthProvider();
 
-    /*try {
-      await signInWithPopup(auth, provider);
-    } catch (error) {
-      console.error("Error signing in with Google", error);
-    }*/
-
     try {
-      await signInWithRedirect(auth, provider);
-      // Handle the redirect result in your component or another function
+        await signInWithRedirect(auth, provider);
+        // Handle the redirect result in your component or another function
     } catch (error) {
-      console.error("Error during sign-in with redirect:", error);
-      throw error;
+        console.error("Error during sign-in with redirect:", error);
+        throw error;
+    }
+}
+
+export async function handleRedirectResult() {
+    try {
+        const result = await getRedirectResult(auth);
+        if (result) {
+            // User signed in successfully.
+            const user = result.user;
+            // Additional user info can be accessed here.
+            return user;
+        }
+    } catch (error) {
+        console.error("Error handling redirect result:", error);
+        throw error;
     }
 }
 
@@ -44,16 +54,6 @@ export async function signOut() {
       console.error("Error signing out with Google", error);
     }
 }
-
-/*export const signInWithRedirect = async () => {
-    try {
-      await signInWithRedirect(auth, provider);
-      // Handle the redirect result in your component or another function
-    } catch (error) {
-      console.error("Error during sign-in with redirect:", error);
-      throw error;
-    }
-};*/
 
 async function fetchWithFirebaseHeaders(request) {
     const app = initializeApp(firebaseConfig);

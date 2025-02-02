@@ -1,3 +1,5 @@
+"use client"; 
+
 import Link from "next/link";
 import { signInWithGoogle } from '../lib/firebase/auth';
 //import { signInWithGoogle } from "@/src/lib/firebase/auth.js";

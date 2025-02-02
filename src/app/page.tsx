@@ -1,11 +1,11 @@
 "use client"; 
 
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
+import React from 'react';
 import { signInWithGoogle } from '../lib/firebase/auth';
-//import { signInWithGoogle } from "@/src/lib/firebase/auth.js";
 
-export default function Home() {
+const Home = () => {
   const router = useRouter();
   const message = process.env["MESSAGE"] || "Welcome to J-Gen Youth Group!";
 
@@ -48,4 +48,6 @@ export default function Home() {
       </section>
     </main>
   );
-}
+};
+
+export default Home;

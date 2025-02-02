@@ -1,6 +1,24 @@
 "use client";
 
 import { useState } from "react";
+import { getFirestore, collection, addDoc } from "firebase/firestore";
+import { initializeApp } from "firebase/app";
+// import { firebaseConfig } from "./config";
+import { firebaseConfig } from "../lib/firebase/config";
+
+// Firebase configuration
+/*const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};*/
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 export default function UserInfo() {
   const [name, setName] = useState("");
@@ -11,10 +29,22 @@ export default function UserInfo() {
   const [education, setEducation] = useState("");
   const [collegeOrCompany, setCollegeOrCompany] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission logic here
-    console.log({ name, phone, dob, gender, placeOfStay, education, collegeOrCompany });
+    try {
+      await addDoc(collection(db, "users"), {
+        name,
+        phone,
+        dob,
+        gender,
+        placeOfStay,
+        education,
+        collegeOrCompany
+      });
+      console.log("Document successfully written!");
+    } catch (error) {
+      console.error("Error writing document: ", error);
+    }
   };
 
   return (

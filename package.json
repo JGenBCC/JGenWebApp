@@ -1,7 +1,8 @@
 {
-  "name": "firebase-app-hosting-nextjs",
-  "version": "1.0.0",
+  "name": "jgenwebapp",
+  "version": "0.1.0",
   "private": true,
+  "homepage": ".",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -12,7 +13,8 @@
     "firebase": "^11.2.0",
     "next": "^15.0.0",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "react-router-dom": "^7.1.5"
   },
   "devDependencies": {
     "@types/node": "^20",

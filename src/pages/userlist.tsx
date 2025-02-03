@@ -9,13 +9,23 @@ import { firebaseConfig } from "../lib/firebase/config";
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+interface User {
+  name: string;
+  phone: string;
+  dob: string;
+  gender: string;
+  placeOfStay: string;
+  education: string;
+  collegeOrCompany: string;
+}
+
 export default function UserList() {
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState<User[]>([]);
 
   useEffect(() => {
     const fetchUsers = async () => {
       const querySnapshot = await getDocs(collection(db, "users"));
-      const usersList = querySnapshot.docs.map(doc => doc.data());
+      const usersList = querySnapshot.docs.map(doc => doc.data() as User);
       setUsers(usersList);
     };
 

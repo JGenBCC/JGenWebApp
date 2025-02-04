@@ -8,6 +8,7 @@ import { signInWithGoogle, handleRedirectResult } from '../lib/firebase/auth';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useAuth } from "../context/AuthContext";
+import Image from 'next/image'; // Import Image component
 
 const Home = () => {
   const router = useRouter();
@@ -20,7 +21,7 @@ const Home = () => {
         {user ? (
           <div>
             <h2>Welcome, {user.displayName}!</h2>
-            <img src={user.photoURL} alt="Profile" width={100} style={{ borderRadius: "50%" }} />
+            <Image src={user.photoURL} alt="Profile" width={100} height={100} style={{ borderRadius: "50%" }} /> {/* Use Image component */}
             <p>Email: {user.email}</p>
             <button onClick={logout} style={{ padding: "10px 20px", fontSize: "16px" }}>
               Sign Out

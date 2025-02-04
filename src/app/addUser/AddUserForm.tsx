@@ -42,6 +42,15 @@ export default function AddUserForm() {
           photo: photoURL
         });
         console.log("Document successfully written!");
+        // Clear form fields
+        setName("");
+        setPhone("");
+        setDob("");
+        setGender("");
+        setPlaceOfStay("");
+        setEducation("");
+        setCollegeOrCompany("");
+        setPhoto(null);
       } catch (error) {
         console.error("Error writing document: ", error);
       }

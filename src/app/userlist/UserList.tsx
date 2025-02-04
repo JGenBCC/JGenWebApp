@@ -38,7 +38,7 @@ export default function UserListClient() {
   }, []);
 
   return (
-    <main className="content userlist-content">
+    <main className="content userlist-content-full">
       <div className="background-screen userlist-background">
         <div className="top-right">
           <button className="google-signin-button">Sign in with Google</button>

@@ -1,28 +1,34 @@
-"use client"; 
+"use client";
 
+import { useEffect } from 'react';
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React from 'react';
-import { signInWithGoogle } from '../lib/firebase/auth';
+import { signInWithGoogle, handleRedirectResult } from '../lib/firebase/auth';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useAuth } from "../context/AuthContext";
 
 const Home = () => {
   const router = useRouter();
   const message = process.env["MESSAGE"] || "Welcome to J-Gen Youth Group!";
-
-  const handleLogin = async () => {
-    try {
-      const response = await signInWithGoogle();
-      console.log("Login Success:", response);
-      router.push("/userList"); // Redirect to the user info page
-    } catch (error) {
-      console.log("Login Failed:", error);
-    }
-  };
+  const { user, login, logout } = useAuth();
 
   return (
     <main className="content">
       <div className="top-right">
-        <button onClick={handleLogin} className="google-signin-button">Sign in with Google</button>
+        {user ? (
+          <div>
+            <h2>Welcome, {user.displayName}!</h2>
+            <img src={user.photoURL} alt="Profile" width={100} style={{ borderRadius: "50%" }} />
+            <p>Email: {user.email}</p>
+            <button onClick={logout} style={{ padding: "10px 20px", fontSize: "16px" }}>
+              Sign Out
+            </button>
+          </div>
+        ) : (
+          <button onClick={login} className="google-signin-button">Sign in with Google</button>
+        )}
       </div>
       <h1 className="heading">J-Gen Youth Group Activities</h1>
       <p>{message}</p>
@@ -46,21 +52,10 @@ const Home = () => {
           </p>
         </article>
       </section>
+      <ToastContainer />
     </main>
   );
 };
 
 export default Home;
 
-// Add the following CSS to your stylesheet
-/*
-.top-right {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-}
-
-.google-signin-button {
-  // Add your button styling here
-}
-*/

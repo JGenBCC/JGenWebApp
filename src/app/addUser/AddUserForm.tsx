@@ -3,12 +3,10 @@
 import { useState } from "react";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { initializeApp } from "firebase/app";
-import { firebaseConfig } from "../../lib/firebase/config";
+import app from "../../lib/firebase/clientApp";
 import { Header } from "../components";
+import { useAuth } from "../../context/AuthContext";
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const storage = getStorage(app);
 

@@ -12,6 +12,13 @@
   --button: #222222; /* Dark gray button for contrast */
 }
 
+/*
+.google-signin-button {
+  // Add your button styling here
+}
+*/
+
+
 .dark-theme {
   --primary-contrast: #fff;
   --secondary-contrast: #ffffff99;

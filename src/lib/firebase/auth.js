@@ -1,8 +1,8 @@
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-import { firebaseConfig } from "./config";
+import { initializeApp } from "firebase/app";
+import { getFirestore, collection, addDoc } from "firebase/firestore";
+import { firebaseConfig, googleAuthProvider, auth } from "./config";
 
 import {
-    GoogleAuthProvider,
     signInWithPopup,
     onAuthStateChanged as _onAuthStateChanged,
     getAuth,
@@ -11,37 +11,63 @@ import {
     getRedirectResult
 } from "firebase/auth";
 
-import { initializeApp } from "firebase/app";
+//import { initializeApp } from "firebase/app";
 import { getInstallations, getToken } from "firebase/installations";
+import { Toaster, toast } from "react-hot-toast";
 
-import { auth } from './clientApp';
+// const app = initializeApp(firebaseConfig); // Initialize the app here
+
+// const auth = getAuth(app); // Moved to config.js
 
 export function onAuthStateChanged(cb) {
     return _onAuthStateChanged(auth, cb);
 }
 
 export async function signInWithGoogle() {
-    const provider = new GoogleAuthProvider();
+    // const provider = new GoogleAuthProvider(); // Moved to config.js
 
     try {
-        await signInWithRedirect(auth, provider);
-        // Handle the redirect result in your component or another function
+        toast.success(`Before login`);
+
+        const db = getFirestore(app);
+        await addDoc(collection(db, "logging"), {"starting": "starting login"});
+
+        await signInWithRedirect(auth, googleAuthProvider);
     } catch (error) {
+        const db = getFirestore(app);
+        await addDoc(collection(db, "logging"), {"starting": "error login"});
+
         console.error("Error during sign-in with redirect:", error);
         throw error;
     }
 }
 
 export async function handleRedirectResult() {
+    console.log("handleRedirectResult called"); // Log statement to confirm function call
+    
+    const db = getFirestore(app);
+    await addDoc(collection(db, "logging"), {"next": "starting handleRedirectResult"});
+
+
     try {
+        await addDoc(collection(db, "logging"), {"next": "before getRedirectResult"});
+
         const result = await getRedirectResult(auth);
+
+        await addDoc(collection(db, "logging"), {"next": result.user.displayName});
+        await addDoc(collection(db, "logging"), {"next": "after getRedirectResult"});
+
         if (result) {
             // User signed in successfully.
             const user = result.user;
+            toast.success(`Welcome, ${user.displayName}!`);
+            console.log("User email:", user.email);
+            await addDoc(collection(db, "logging"), {"next": user.email});
             // Additional user info can be accessed here.
             return user;
         }
     } catch (error) {
+        toast.error("Google Sign-In failed!");
         console.error("Error handling redirect result:", error);
         throw error;
     }
@@ -56,8 +82,6 @@ export async function signOut() {
 }
 
 async function fetchWithFirebaseHeaders(request) {
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
     const installations = getInstallations(app);
     const headers = new Headers(request.headers);
     const [authIdToken, installationToken] = await Promise.all([

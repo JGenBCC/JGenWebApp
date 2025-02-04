@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-
+import { AuthProvider } from "../context/AuthContext";
 import "../styles/globals.css";
 import { Header } from "./components";
 
@@ -8,9 +8,7 @@ export const metadata: Metadata = {
   description: "",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({children,}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className="light-theme">
       <head>
@@ -21,10 +19,12 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <div className="dots" />
-        <Header />
-        {children}
-        <div className="bottom-gradient" />
+        <AuthProvider>
+          <div className="dots" />
+          <Header />
+          {children}
+          <div className="bottom-gradient" />
+        </AuthProvider>
       </body>
     </html>
   );

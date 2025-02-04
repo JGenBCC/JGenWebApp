@@ -30,7 +30,7 @@ const Home = () => {
         <article className="card">
           <h2>Add New Member</h2>
           <p>
-            Join us for exciting community events and activities. Learn more about our upcoming events{" "}
+            Join us for exciting community events and activities. Add your profile details here{" "}
             <Link href="/addUser">
               <code>/addUser</code>
             </Link>.
@@ -39,7 +39,7 @@ const Home = () => {
         <article className="card">
           <h2>View Added Members</h2>
           <p>
-            Get involved and make a difference! Check out our volunteer opportunities{" "}
+            Get involved and make a difference! Check out our existing profiles{" "}
             <Link href="/userlist">
               <code>/userlist</code>
             </Link>.

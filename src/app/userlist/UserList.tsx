@@ -3,23 +3,26 @@
 import { useEffect, useState } from "react";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 import { initializeApp } from "firebase/app";
-import { firebaseConfig } from "../lib/firebase/config";
+import { firebaseConfig } from "../../lib/firebase/config";
+
+// ...existing code for Firebase initialization and User interface...
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 interface User {
-  name: string;
-  phone: string;
-  dob: string;
-  gender: string;
-  placeOfStay: string;
-  education: string;
-  collegeOrCompany: string;
-}
+    name: string;
+    phone: string;
+    dob: string;
+    gender: string;
+    placeOfStay: string;
+    education: string;
+    collegeOrCompany: string;
+  }
+  
 
-export default function UserList() {
+export default function UserListClient() {
   const [users, setUsers] = useState<User[]>([]);
 
   useEffect(() => {
@@ -33,9 +36,12 @@ export default function UserList() {
   }, []);
 
   return (
-    <main className="content" style={{ backgroundImage: 'url("/path/to/background-image.jpg")', backgroundSize: 'cover' }}>
-      <div className="background-screen">
-        <h1 className="heading">User List</h1>
+    <main className="content userlist-content">
+      <div className="background-screen userlist-background">
+        <div className="top-right">
+          <button className="google-signin-button">Sign in with Google</button>
+        </div>
+        <h1 className="heading userlist-heading">User List</h1>
         <ul className="user-list">
           {users.map((user, index) => (
             <li key={index} className="user-item">

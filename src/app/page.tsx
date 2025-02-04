@@ -21,27 +21,27 @@ const Home = () => {
 
   return (
     <main className="content">
+      <div className="top-right">
+        <button onClick={handleLogin} className="google-signin-button">Sign in with Google</button>
+      </div>
       <h1 className="heading">J-Gen Youth Group Activities</h1>
       <p>{message}</p>
-
-      <button onClick={handleLogin}>Sign in with Google</button>
-
       <section className="features">
         <article className="card">
-          <h2>Community Events</h2>
+          <h2>Add New Member</h2>
           <p>
             Join us for exciting community events and activities. Learn more about our upcoming events{" "}
-            <Link href="/events">
-              <code>/events</code>
+            <Link href="/addUser">
+              <code>/addUser</code>
             </Link>.
           </p>
         </article>
         <article className="card">
-          <h2>Volunteer Opportunities</h2>
+          <h2>View Added Members</h2>
           <p>
             Get involved and make a difference! Check out our volunteer opportunities{" "}
-            <Link href="/volunteer">
-              <code>/volunteer</code>
+            <Link href="/userlist">
+              <code>/userlist</code>
             </Link>.
           </p>
         </article>
@@ -51,3 +51,16 @@ const Home = () => {
 };
 
 export default Home;
+
+// Add the following CSS to your stylesheet
+/*
+.top-right {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.google-signin-button {
+  // Add your button styling here
+}
+*/

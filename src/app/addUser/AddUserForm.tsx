@@ -3,39 +3,40 @@
 import { useState } from "react";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { initializeApp } from "firebase/app";
-import { firebaseConfig } from "../lib/firebase/config";
-import { Header } from "../app/components"; // Adjust the import path as necessary
+import { firebaseConfig } from "../../lib/firebase/config";
+import { Header } from "../components";
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-export default function UserInfo() {
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [dob, setDob] = useState("");
-  const [gender, setGender] = useState("");
-  const [placeOfStay, setPlaceOfStay] = useState("");
-  const [education, setEducation] = useState("");
-  const [collegeOrCompany, setCollegeOrCompany] = useState("");
+export default function AddUserForm() {
+    const [name, setName] = useState("");
+    const [phone, setPhone] = useState("");
+    const [dob, setDob] = useState("");
+    const [gender, setGender] = useState("");
+    const [placeOfStay, setPlaceOfStay] = useState("");
+    const [education, setEducation] = useState("");
+    const [collegeOrCompany, setCollegeOrCompany] = useState("");
+  
+    const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+      try {
+        await addDoc(collection(db, "users"), {
+          name,
+          phone,
+          dob,
+          gender,
+          placeOfStay,
+          education,
+          collegeOrCompany
+        });
+        console.log("Document successfully written!");
+      } catch (error) {
+        console.error("Error writing document: ", error);
+      }
+    };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await addDoc(collection(db, "users"), {
-        name,
-        phone,
-        dob,
-        gender,
-        placeOfStay,
-        education,
-        collegeOrCompany
-      });
-      console.log("Document successfully written!");
-    } catch (error) {
-      console.error("Error writing document: ", error);
-    }
-  };
 
   return (
     <div lang="en" className="light-theme">
@@ -45,7 +46,7 @@ export default function UserInfo() {
         <div className="background-screen">
           <h1 className="heading">User Information</h1>
           <form onSubmit={handleSubmit} className="user-form">
-            <label className="form-field">
+          <label className="form-field">
               Name:
               <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
               <br /><br /><br />

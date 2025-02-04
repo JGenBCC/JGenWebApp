@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 
-import "./globals.css";
+import "../styles/globals.css";
 import { Header } from "./components";
 
 export const metadata: Metadata = {
-  title: "Next.js on Firebase App Hosting",
+  title: "J-Gen",
   description: "",
 };
 

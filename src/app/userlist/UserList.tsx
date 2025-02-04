@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 import { initializeApp } from "firebase/app";
 import { firebaseConfig } from "../../lib/firebase/config";
+import Image from "next/image";
 
 // ...existing code for Firebase initialization and User interface...
 
@@ -19,6 +20,7 @@ interface User {
     placeOfStay: string;
     education: string;
     collegeOrCompany: string;
+    photo: string | null;
   }
   
 
@@ -45,6 +47,15 @@ export default function UserListClient() {
         <ul className="user-list">
           {users.map((user, index) => (
             <li key={index} className="user-item">
+              {user.photo && (
+                <Image
+                  src={user.photo}
+                  alt={`${user.name}'s photo`}
+                  className="user-photo"
+                  width={100}
+                  height={100}
+                />
+              )}
               <p><strong>Name:</strong> {user.name}</p>
               <p><strong>Phone:</strong> {user.phone}</p>
               <p><strong>Date of Birth:</strong> {user.dob}</p>

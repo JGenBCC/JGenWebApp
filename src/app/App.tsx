@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Home from "./page";
-import UserInfo from "../pages/userinfo"; // Update the import statement
+import UserInfo from "./userlist/UserList"; // Update the import statement
 // ...existing code...
 
 function App() {

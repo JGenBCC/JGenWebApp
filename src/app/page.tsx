@@ -13,7 +13,7 @@ const Home = () => {
     try {
       const response = await signInWithGoogle();
       console.log("Login Success:", response);
-      router.push("/user-info"); // Redirect to the user info page
+      router.push("/userList"); // Redirect to the user info page
     } catch (error) {
       console.log("Login Failed:", error);
     }

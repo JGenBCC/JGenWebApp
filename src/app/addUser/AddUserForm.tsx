@@ -5,7 +5,6 @@ import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import app from "../../lib/firebase/clientApp";
 import { Header } from "../components";
-import { useAuth } from "../../context/AuthContext";
 
 const db = getFirestore(app);
 const storage = getStorage(app);

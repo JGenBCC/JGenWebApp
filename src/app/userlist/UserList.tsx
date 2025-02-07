@@ -21,7 +21,7 @@ interface User {
     education: string;
     collegeOrCompany: string;
     photo: string | null;
-  }
+}
   
 
 export default function UserListClient() {

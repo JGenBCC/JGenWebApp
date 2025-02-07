@@ -1,10 +1,8 @@
 "use client";
 
-import { useEffect } from 'react';
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React from 'react';
-import { signInWithGoogle, handleRedirectResult } from '../lib/firebase/auth';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useAuth } from "../context/AuthContext";

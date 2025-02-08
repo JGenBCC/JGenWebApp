@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { signOut, onAuthStateChanged, signInWithPopup } from "firebase/auth";
+import { signOut, onAuthStateChanged, signInWithPopup, signInWithRedirect, getRedirectResult } from "firebase/auth";
 import { auth, provider } from "../../firebase";
 
 const AuthContext = createContext();
@@ -9,9 +9,18 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [signInLoading, setSignInLoading] = useState(false); // Add signInLoading state
+  const [signInLoading, setSignInLoading] = useState(false);
 
   useEffect(() => {
+    // Handle sign-in redirect result
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result && result.user) {
+          setUser(result.user);
+        }
+      })
+      .catch((error) => console.error("Error during getRedirectResult:", error));
+
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
@@ -27,13 +36,14 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async () => {
-    setSignInLoading(true); // Set loading state to true
+    setSignInLoading(true);
     try {
-      await signInWithPopup(auth, provider);
+    //await signInWithPopup(auth, provider);
+      await signInWithRedirect(auth, provider);
     } catch (error) {
       console.error("Error during sign in:", error);
     } finally {
-      setSignInLoading(false); // Reset loading state
+      setSignInLoading(false);
     }
   };
 

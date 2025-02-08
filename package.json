@@ -10,7 +10,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "firebase": "^11.2.0",
+    "firebase": "^11.3.0",
+    "firebaseui": "^6.1.0",
     "idb": "^8.0.2",
     "js-cookie": "^3.0.5",
     "next": "^15.0.0",

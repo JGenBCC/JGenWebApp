@@ -1,8 +1,4 @@
-import { initializeApp } from "firebase/app";
-import { GoogleAuthProvider } from "firebase/auth";
-import { getAuth } from "firebase/auth";
-
-export const firebaseConfig = {
+export const config = {
   apiKey: "AIzaSyBVihl3qr_pRU7x5yCJL5V_zxBIhfswCgo",
   authDomain: "jgenwebapp.firebaseapp.com",
   projectId: "jgenwebapp",
@@ -12,6 +8,12 @@ export const firebaseConfig = {
   measurementId: "G-BMK9PKBXHE"
 };
 
-const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-export const googleAuthProvider = new GoogleAuthProvider();
+// When deployed, there are quotes that need to be stripped
+Object.keys(config).forEach((key) => {
+  const configValue = config[key] + "";
+  if (configValue.charAt(0) === '"') {
+    config[key] = configValue.substring(1, configValue.length - 1);
+  }
+});
+
+export const firebaseConfig = config;

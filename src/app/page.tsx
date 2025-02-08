@@ -2,11 +2,14 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useAuth } from "../context/AuthContext";
-import Image from 'next/image'; // Import Image component
+import Image from 'next/image';
+//import Header from "./components/Header";
+//import { Header } from "./components";
+//import { Auth } from './auth';
 
 const Home = () => {
   const router = useRouter();
@@ -19,14 +22,16 @@ const Home = () => {
         {user ? (
           <div>
             <h2>Welcome, {user.displayName}!</h2>
-            <Image src={user.photoURL} alt="Profile" width={100} height={100} style={{ borderRadius: "50%" }} /> {/* Use Image component */}
+            <Image src={user.photoURL} alt="Profile" width={100} height={100} style={{ borderRadius: "50%" }} />
             <p>Email: {user.email}</p>
             <button onClick={logout} style={{ padding: "10px 20px", fontSize: "16px" }}>
               Sign Out
             </button>
           </div>
         ) : (
-          <button onClick={login} className="google-signin-button">Sign in with Google</button>
+          <button onClick={login} className="button">
+            Sign in with Google
+          </button>
         )}
       </div>
       <h1 className="heading">J-Gen Youth Group Activities</h1>

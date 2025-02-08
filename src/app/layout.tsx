@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { AuthProvider } from "../context/AuthContext";
 import "../styles/globals.css";
 import { Header } from "./components";
+//import Header from "./components/Header";
 
 export const metadata: Metadata = {
   title: "J-Gen",

@@ -2,15 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
-import { initializeApp } from "firebase/app";
-import { firebaseConfig } from "../../lib/firebase/config";
+import { firebaseApp } from "../../lib/firebase/clientApp"; // Import the firebase app instance
 import Image from "next/image";
 
 // ...existing code for Firebase initialization and User interface...
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+// const app = initializeApp(firebaseConfig); // REMOVE THIS LINE
+const db = getFirestore(firebaseApp);
 
 interface User {
     name: string;
@@ -41,7 +40,6 @@ export default function UserListClient() {
     <main className="content userlist-content-full">
       <div className="background-screen userlist-background">
         <div className="top-right">
-          <button className="google-signin-button">Sign in with Google</button>
         </div>
         <h1 className="heading userlist-heading">User List</h1>
         <ul className="user-list">

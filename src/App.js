@@ -1,13 +1,14 @@
-import React from 'react';
-import { Toaster } from 'react-hot-toast';
+/*import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 function App() {
-    return (
-        <div>
-            <Toaster />
-            {/* Your UI components */}
-        </div>
-    );
+  return (
+    <Router>
+      <Routes>
+      </Routes>
+    </Router>
+  );
 }
 
 export default App;
+*/

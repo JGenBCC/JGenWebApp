@@ -3,11 +3,8 @@
 import { useState } from "react";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import app from "../../lib/firebase/clientApp";
+import { firebaseApp, db, storage } from "../../lib/firebase/clientApp";
 import { Header } from "../components";
-
-const db = getFirestore(app);
-const storage = getStorage(app);
 
 export default function AddUserForm() {
     const [name, setName] = useState("");

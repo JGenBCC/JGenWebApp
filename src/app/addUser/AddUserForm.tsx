@@ -15,7 +15,8 @@ export default function AddUserForm() {
     const [education, setEducation] = useState("");
     const [collegeOrCompany, setCollegeOrCompany] = useState("");
     const [photo, setPhoto] = useState<File | null>(null);
-  
+    const [userType, setUserType] = useState("regular");
+
     const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
       try {
@@ -33,7 +34,8 @@ export default function AddUserForm() {
           placeOfStay,
           education,
           collegeOrCompany,
-          photo: photoURL
+          photo: photoURL,
+          userType
         });
         console.log("Document successfully written!");
         // Clear form fields
@@ -45,6 +47,7 @@ export default function AddUserForm() {
         setEducation("");
         setCollegeOrCompany("");
         setPhoto(null);
+        setUserType("regular");
       } catch (error) {
         console.error("Error writing document: ", error);
       }

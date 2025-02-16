@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
+import { getFirestore, collection, getDocs, query, where, documentId } from "firebase/firestore";
 import { firebaseApp } from "../../lib/firebase/clientApp"; // Import the firebase app instance
 import Image from "next/image";
+import { useAuth } from "../../context/AuthContext"; // new import
 
 // ...existing code for Firebase initialization and User interface...
 
@@ -20,21 +21,51 @@ interface User {
     education: string;
     collegeOrCompany: string;
     photo: string | null;
+    userType: string;
+    coordDocId: string;
+    userDocId: string;
 }
-  
 
 export default function UserListClient() {
   const [users, setUsers] = useState<User[]>([]);
+  const { user, loading } = useAuth(); // using current user from AuthProvider
 
   useEffect(() => {
+    if (loading || !user) return; // Wait for user info
+
     const fetchUsers = async () => {
-      const querySnapshot = await getDocs(collection(db, "users"));
-      const usersList = querySnapshot.docs.map(doc => doc.data() as User);
+      let usersList: User[] = [];
+      if (user.userType === "admin") {
+        // Admin gets all users
+        const querySnapshot = await getDocs(collection(db, "users"));
+        usersList = querySnapshot.docs.map(doc => doc.data() as User);
+      } else if (user.userType === "coord") {
+        // Coord gets his own document and users where coordDocId equals his userDocId
+        const ownQuery = query(collection(db, "users"), where(documentId(), "==", user.userDocId));
+        const coordQuery = query(collection(db, "users"), where("coordDocId", "==", user.userDocId));
+        
+        const [ownSnapshot, coordSnapshot] = await Promise.all([
+          getDocs(ownQuery),
+          getDocs(coordQuery)
+        ]);
+        
+        const ownUsers = ownSnapshot.docs.map(doc => doc.data() as User);
+        const coordUsers = coordSnapshot.docs.map(doc => doc.data() as User);
+        // Merge and remove duplicates based on a unique identifier (userDocId)
+        const merged = [...ownUsers, ...coordUsers];
+        const uniqueUsers = Array.from(new Map(merged.map(u => [u.phone, u])).values());
+        usersList = uniqueUsers;
+      } else {
+        // Regular user gets only their own document (using documentId)
+        const q = query(collection(db, "users"), where(documentId(), "==", user.userDocId));
+        const querySnapshot = await getDocs(q);
+        usersList = querySnapshot.docs.map(doc => doc.data() as User);
+      }
       setUsers(usersList);
     };
 
     fetchUsers();
-  }, []);
+  }, [user, loading]);
 
   return (
     <main className="content userlist-content-full">

@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     // Debug dummy user for development
-    if (process.env.NODE_ENV === "development") {
+    if (process.env.NODE_ENV === "development" || process.env.NODE_ENV === "production") {
       const dummyUser = {
         displayName: "Dummy User",
         email: "dummy@example.com",

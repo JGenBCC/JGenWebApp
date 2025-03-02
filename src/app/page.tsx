@@ -11,29 +11,26 @@ import Image from 'next/image';
 const Home = () => {
   const router = useRouter();
   const message = process.env["MESSAGE"] || "Welcome to J-Gen Youth Group!";
-  const { user, login, logout, loginWithPhone, signInLoading } = useAuth();
+  const { user, logout, loginWithPhone, signInLoading } = useAuth();
 
   return (
     <main className="content">
       <div className="top-right">
         {user ? (
           <div>
-            <h2>Welcome, {user.displayName}!</h2>
+            <h2>Welcome, {user.displayName || user.phoneNumber.replace('+91', '')}!</h2>
             {user.photoURL ? (
               <Image src={user.photoURL} alt="Profile" width={100} height={100} style={{ borderRadius: "50%" }} />
             ) : null}
-            <p>Email: {user.email}</p>
+            <p>Phone: {user.phoneNumber.replace('+91', '')}</p>
             <button onClick={logout} style={{ padding: "10px 20px", fontSize: "16px" }}>
               Sign Out
             </button>
           </div>
         ) : (
           <div>
-            <button onClick={login} className="button" disabled={signInLoading}>
-              {signInLoading ? "Signing in..." : "Sign in with Google"}
-            </button>
-            <button onClick={loginWithPhone} className="button" style={{ marginLeft: '10px' }} disabled={signInLoading}>
-              Sign in with Phone
+            <button onClick={loginWithPhone} className="button" disabled={signInLoading}>
+              {signInLoading ? "Signing in..." : "Sign in with Phone"}
             </button>
           </div>
         )}

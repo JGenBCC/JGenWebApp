@@ -104,11 +104,7 @@ export const AuthProvider = ({ children }) => {
 
   // Updated function for India-only phone auth with environment check
   const loginWithPhone = async () => {
-    if (process.env.NODE_ENV === "development") {
-      alert("Phone auth is not enabled in development mode.");
-      return;
-    }
-    let phoneInput = prompt("Enter your 10-digit Indian phone number:");
+    let phoneInput = prompt("Enter your 10-digit phone number:");
     if (!phoneInput) return;
     phoneInput = phoneInput.trim();
     const indianPhoneRegex = /^\d{10}$/;
@@ -116,16 +112,16 @@ export const AuthProvider = ({ children }) => {
     if (indianPhoneRegex.test(phoneInput)) {
       phoneNumber = "+91" + phoneInput;
     } else if (!phoneInput.startsWith("+91") || phoneInput.length !== 13) {
-      alert("Please enter a valid 10-digit Indian phone number.");
+      alert("Please enter a valid 10-digit phone number.");
       return;
     }
     try {
-      // Ensure that a recaptcha container exists in your app with id "recaptcha-container"
+      // Corrected RecaptchaVerifier: container id is first, config second, auth third.
       if (!window.recaptchaVerifier) {
-        window.recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {
+        window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
           size: 'invisible',
           callback: (response) => { /* reCAPTCHA solved */ }
-        }, auth);
+        });
       }
       const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, window.recaptchaVerifier);
       const verificationCode = prompt("Enter the verification code you received:");

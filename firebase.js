@@ -15,12 +15,10 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
-/*
-if (typeof window !== 'undefined') {
-  initializeAppCheck(app, {
-    provider: new ReCaptchaV3Provider(process.env.NEXT_PUBLIC_RECAPTCHA_V3_SITE_KEY),
-    isTokenAutoRefreshEnabled: true
-  });
-}*/
+
+// For testing phone auth, disable app verification in development mode
+if (process.env.NODE_ENV === "development") {
+  auth.settings = { appVerificationDisabledForTesting: true };
+}
 
 export { auth, provider };

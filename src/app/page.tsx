@@ -19,7 +19,9 @@ const Home = () => {
         {user ? (
           <div>
             <h2>Welcome, {user.displayName}!</h2>
-            <Image src={user.photoURL} alt="Profile" width={100} height={100} style={{ borderRadius: "50%" }} />
+            {user.photoURL ? (
+              <Image src={user.photoURL} alt="Profile" width={100} height={100} style={{ borderRadius: "50%" }} />
+            ) : null}
             <p>Email: {user.email}</p>
             <button onClick={logout} style={{ padding: "10px 20px", fontSize: "16px" }}>
               Sign Out

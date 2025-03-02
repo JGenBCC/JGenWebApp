@@ -12,8 +12,8 @@ export const AuthProvider = ({ children }) => {
   const [signInLoading, setSignInLoading] = useState(false);
 
   useEffect(() => {
-    // Debug dummy user for development
-    if (process.env.NODE_ENV === "development" || process.env.NODE_ENV === "production") {
+    // Use dummy user only in development; remove from production for proper Firebase auth
+    if (process.env.NODE_ENV === "development") {
       const dummyUser = {
         displayName: "Dummy User",
         email: "dummy@example.com",

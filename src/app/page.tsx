@@ -11,7 +11,7 @@ import Image from 'next/image';
 const Home = () => {
   const router = useRouter();
   const message = process.env["MESSAGE"] || "Welcome to J-Gen Youth Group!";
-  const { user, login, logout, signInLoading } = useAuth();
+  const { user, login, logout, loginWithPhone, signInLoading } = useAuth();
 
   return (
     <main className="content">
@@ -26,9 +26,14 @@ const Home = () => {
             </button>
           </div>
         ) : (
-          <button onClick={login} className="button" disabled={signInLoading}>
-            {signInLoading ? "Signing in..." : "Sign in with Google"}
-          </button>
+          <div>
+            <button onClick={login} className="button" disabled={signInLoading}>
+              {signInLoading ? "Signing in..." : "Sign in with Google"}
+            </button>
+            <button onClick={loginWithPhone} className="button" style={{ marginLeft: '10px' }} disabled={signInLoading}>
+              Sign in with Phone
+            </button>
+          </div>
         )}
       </div>
       <h1 className="heading">J-Gen Youth Group Activities</h1>
@@ -53,6 +58,8 @@ const Home = () => {
           </p>
         </article>
       </section>
+      {/* Recaptcha container required for phone auth */}
+      <div id="recaptcha-container"></div>
       <ToastContainer />
     </main>
   );

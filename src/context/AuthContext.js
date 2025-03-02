@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { signOut, onAuthStateChanged, signInWithPopup, signInWithRedirect, getRedirectResult } from "firebase/auth";
+import { signOut, onAuthStateChanged, signInWithPopup, signInWithRedirect, getRedirectResult, RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { auth, provider } from "../../firebase";
 
 const AuthContext = createContext();
@@ -18,7 +18,6 @@ export const AuthProvider = ({ children }) => {
         displayName: "Dummy User",
         email: "dummy@example.com",
         uid: "dummy-uid",
-        
         
         
         /*
@@ -103,6 +102,42 @@ export const AuthProvider = ({ children }) => {
     };
   }, []);
 
+  // Updated function for India-only phone auth with environment check
+  const loginWithPhone = async () => {
+    if (process.env.NODE_ENV === "development") {
+      alert("Phone auth is not enabled in development mode.");
+      return;
+    }
+    let phoneInput = prompt("Enter your 10-digit Indian phone number:");
+    if (!phoneInput) return;
+    phoneInput = phoneInput.trim();
+    const indianPhoneRegex = /^\d{10}$/;
+    let phoneNumber = phoneInput;
+    if (indianPhoneRegex.test(phoneInput)) {
+      phoneNumber = "+91" + phoneInput;
+    } else if (!phoneInput.startsWith("+91") || phoneInput.length !== 13) {
+      alert("Please enter a valid 10-digit Indian phone number.");
+      return;
+    }
+    try {
+      // Ensure that a recaptcha container exists in your app with id "recaptcha-container"
+      if (!window.recaptchaVerifier) {
+        window.recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {
+          size: 'invisible',
+          callback: (response) => { /* reCAPTCHA solved */ }
+        }, auth);
+      }
+      const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, window.recaptchaVerifier);
+      const verificationCode = prompt("Enter the verification code you received:");
+      if (verificationCode) {
+        const result = await confirmationResult.confirm(verificationCode);
+        setUser(result.user);
+      }
+    } catch (error) {
+      console.error("Error during phone sign in:", error);
+    }
+  };
+
   const login = async () => {
     setSignInLoading(true);
     try {
@@ -121,7 +156,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading, signInLoading }}>
+    <AuthContext.Provider value={{ user, login, logout, loginWithPhone, loading, signInLoading }}>
       {children}
     </AuthContext.Provider>
   );

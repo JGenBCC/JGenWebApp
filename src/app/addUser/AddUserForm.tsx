@@ -7,7 +7,7 @@ import { firebaseApp, db, storage } from "../../lib/firebase/clientApp";
 import { Header } from "../components";
 
 export default function AddUserForm() {
-    const [name, setName] = useState("");
+    const [displayName, setDisplayName] = useState("");
     const [phone, setPhone] = useState("");
     const [dob, setDob] = useState("");
     const [gender, setGender] = useState("");
@@ -27,7 +27,7 @@ export default function AddUserForm() {
             photoURL = await getDownloadURL(storageRef);
         }
         await addDoc(collection(db, "users"), {
-          name,
+          displayName,
           phone,
           dob,
           gender,
@@ -39,7 +39,7 @@ export default function AddUserForm() {
         });
         console.log("Document successfully written!");
         // Clear form fields
-        setName("");
+        setDisplayName("");
         setPhone("");
         setDob("");
         setGender("");
@@ -62,8 +62,8 @@ export default function AddUserForm() {
                     <h1 className="heading">User Information</h1>
                     <form onSubmit={handleSubmit} className="user-form">
                         <label className="form-field">
-                            Name:
-                            <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
+                            Display Name:
+                            <input type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)} required />
                             <br /><br /><br />
                         </label>
                         <label className="form-field">

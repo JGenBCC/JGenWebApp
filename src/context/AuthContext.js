@@ -2,8 +2,11 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { signOut, onAuthStateChanged, getRedirectResult, RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
-import { auth } from "../../firebase"; // removed provider and signInWithPopup/signInWithRedirect
+import { auth } from "../../firebase";
+import { getFirestore, collection, getDocs, query, where, documentId } from "firebase/firestore";
+import { firebaseApp } from "../lib/firebase/clientApp"; // Import the firebase app instance
 
+const db = getFirestore(firebaseApp);
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -12,19 +15,11 @@ export const AuthProvider = ({ children }) => {
   const [signInLoading, setSignInLoading] = useState(false);
 
   useEffect(() => {
-    // Use dummy user only in development; remove from production for proper Firebase auth
-    /*if (process.env.NODE_ENV === "development") {
-      const dummyUser = {
-        displayName: "Dummy User",
-        email: "dummy@example.com",
-        uid: "dummy-uid",
-        // ...other fields...
-      };
-      setUser(dummyUser);
-      setLoading(false);
-      return;
-    }*/
+    // Log whenever user changes
+    console.log("Updated user:", user);
+  }, [user]);
 
+  useEffect(() => {
     // Remove email login redirect handling
     // ...existing onAuthStateChanged code...
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -34,7 +29,7 @@ export const AuthProvider = ({ children }) => {
       } else {
         setUser(null);
       }
-      setLoading(false);
+      setLoading(false);    
     });
     return () => {
       unsubscribe();
@@ -66,6 +61,24 @@ export const AuthProvider = ({ children }) => {
       if (verificationCode) {
         const result = await confirmationResult.confirm(verificationCode);
         setUser(result.user);
+
+        const userQuery = query(collection(db, "users"), where("phone", "==", phoneNumber));
+        const userSnapshot = await getDocs(userQuery);
+
+        if (userSnapshot.empty == false) {
+          // User exists
+          console.log("User exists");
+          // Merge Firestore user details with the Firebase user object and save the document ID
+          const firestoreUserData = userSnapshot.docs[0].data();
+          setUser({ ...result.user, 
+            displayName: firestoreUserData.displayName,
+            phone: firestoreUserData.phone,
+            gender: firestoreUserData.gender,
+            photoURL: firestoreUserData.photoURL,
+            userType: firestoreUserData.userType,
+            userDocId: userSnapshot.docs[0].id  // new property
+          });
+        }
       }
     } catch (error) {
       console.error("Error during phone sign in:", error);
@@ -75,6 +88,7 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     await signOut(auth);
     setUser(null);
+    window.location.reload(); // Refresh the page after logout
   };
 
   return (

@@ -13,14 +13,14 @@ import { useAuth } from "../../context/AuthContext"; // new import
 const db = getFirestore(firebaseApp);
 
 interface User {
-    name: string;
+    displayName: string;
     phone: string;
     dob: string;
     gender: string;
     placeOfStay: string;
     education: string;
     collegeOrCompany: string;
-    photo: string | null;
+    photoURL: string | null;
     userType: string;
     coordDocId: string;
     userDocId: string;
@@ -76,16 +76,16 @@ export default function UserListClient() {
         <ul className="user-list">
           {users.map((user, index) => (
             <li key={index} className="user-item">
-              {user.photo && (
+              {user.photoURL && (
                 <Image
-                  src={user.photo}
-                  alt={`${user.name}'s photo`}
+                  src={user.photoURL}
+                  alt={`${user.displayName}'s photo`}
                   className="user-photo"
                   width={100}
                   height={100}
                 />
               )}
-              <p><strong>Name:</strong> {user.name}</p>
+              <p><strong>Name:</strong> {user.displayName}</p>
               <p><strong>Phone:</strong> {user.phone}</p>
               <p><strong>Date of Birth:</strong> {user.dob}</p>
               <p><strong>Gender:</strong> {user.gender}</p>

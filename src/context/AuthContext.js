@@ -26,6 +26,30 @@ export const AuthProvider = ({ children }) => {
       if (currentUser) {
         // ...optional phone-specific user properties...
         setUser(currentUser);
+
+        const userQuery = query(collection(db, "users"), where("phone", "==", currentUser.phoneNumber));
+
+        getDocs(userQuery)
+          .then((userSnapshot) => {
+            if (!userSnapshot.empty) {
+              // User exists
+              console.log("User exists");
+              // Merge Firestore user details with the Firebase user object and save the document ID
+              const firestoreUserData = userSnapshot.docs[0].data();
+              setUser({
+                ...currentUser,
+                displayName: firestoreUserData.displayName,
+                phone: firestoreUserData.phone,
+                gender: firestoreUserData.gender,
+                photoURL: firestoreUserData.photoURL,
+                userType: firestoreUserData.userType,
+                userDocId: userSnapshot.docs[0].id // new property
+              });
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching user data:", error);
+          });
       } else {
         setUser(null);
       }

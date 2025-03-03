@@ -31,7 +31,7 @@ export default function UserListClient() {
   const { user, loading } = useAuth(); // using current user from AuthProvider
 
   useEffect(() => {
-    if (loading || !user) return; // Wait for user info
+    if (loading || !user || !user.userDocId) return; // Wait for user info
 
     const fetchUsers = async () => {
       let usersList: User[] = [];

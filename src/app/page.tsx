@@ -67,6 +67,11 @@ const Home = () => {
               </Link>
             </li>
             <li style={{ margin: '20px 0' }}>
+              <Link href="/pastEvents" style={{ color: '#fff', textDecoration: 'none' }}>
+                Past Events
+              </Link>
+            </li>
+            <li style={{ margin: '20px 0' }}>
               <Link href="/enterAttendence" style={{ color: '#fff', textDecoration: 'none' }}>
                 Enter Attendence
               </Link>
@@ -76,7 +81,7 @@ const Home = () => {
       </div>
 
       {/* Main Content */}
-      <div style={{ marginLeft: isSidebarOpen ? '250px' : '0', transition: 'margin-left 0.3s ease', width: '100%' }}>
+      <div style={{ marginLeft: isSidebarOpen ? '250px' : '0', transition: 'margin-left 0.05s ease', width: '100%' }}>
       <header
         style={{
           display: 'flex',
@@ -96,7 +101,7 @@ const Home = () => {
           }}
           aria-label="Open sidebar"
         >
-          &#9776; Menu
+          &#9776; 
         </button>
       </header>
         <main className="content" style={{ padding: '20px' }}>
@@ -105,9 +110,9 @@ const Home = () => {
               <div>
                 <h2>Welcome, {user.displayName || user.phoneNumber.replace('+91', '')}!</h2>
                 {user.photoURL ? (
-                  <Image src={user.photoURL} alt="Profile" width={100} height={100} style={{ borderRadius: "50%" }} />
+                  <Image src={user.photoURL} alt="Profile" width={50} height={50} style={{ borderRadius: "50%" }} />
                 ) : null}
-                <p>Phone: {user.phoneNumber.replace('+91', '')}</p>
+                <p>Ph: {user.phoneNumber.replace('+91', '')}</p>
                 <button onClick={logout} style={{ padding: "10px 20px", fontSize: "16px" }}>
                   Sign Out
                 </button>

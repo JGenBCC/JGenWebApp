@@ -30,6 +30,14 @@ export default function UserListClient() {
   const [users, setUsers] = useState<User[]>([]);
   const { user, loading } = useAuth(); // using current user from AuthProvider
 
+  // Helper function to format date as dd-mm-yyyy
+  function formatDOB(dob: string): string {
+    const date = new Date(dob);
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    return `${day}-${month}-${date.getFullYear()}`;
+  }
+
   useEffect(() => {
     if (loading || !user || !user.userDocId) return; // Wait for user info
 
@@ -72,26 +80,29 @@ export default function UserListClient() {
       <div className="background-screen userlist-background">
         <div className="top-right">
         </div>
-        <h1 className="heading userlist-heading">User List</h1>
+        <h1 className="heading userlist-heading" style={{ marginBottom: "1rem" }}>Users List</h1>
         <ul className="user-list">
           {users.map((user, index) => (
-            <li key={index} className="user-item">
+            <li key={index} className="user-item" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem" }}>
+              <div className="user-details">
+                <p><strong>{index + 1}: {user.displayName}</strong></p>
+                <p>{user.phone}</p>
+                <p>{formatDOB(user.dob)}</p>
+                <p>{user.placeOfStay}</p>
+                <p>{user.education}</p>
+                <p>{user.collegeOrCompany}</p>
+              </div>
               {user.photoURL && (
-                <Image
-                  src={user.photoURL}
-                  alt={`${user.displayName}'s photo`}
-                  className="user-photo"
-                  width={100}
-                  height={100}
-                />
+                <div className="user-photo-container">
+                  <Image
+                    src={user.photoURL}
+                    alt={`${user.displayName}'s photo`}
+                    className="user-photo"
+                    width={100}
+                    height={100}
+                  />
+                </div>
               )}
-              <p><strong>Name:</strong> {user.displayName}</p>
-              <p><strong>Phone:</strong> {user.phone}</p>
-              <p><strong>Date of Birth:</strong> {user.dob}</p>
-              <p><strong>Gender:</strong> {user.gender}</p>
-              <p><strong>Place of Stay:</strong> {user.placeOfStay}</p>
-              <p><strong>Education:</strong> {user.education}</p>
-              <p><strong>College/Company:</strong> {user.collegeOrCompany}</p>
             </li>
           ))}
         </ul>

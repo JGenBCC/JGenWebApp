@@ -76,6 +76,11 @@ const Home = () => {
                 Enter Attendence
               </Link>
             </li>
+            <li style={{ margin: '20px 0' }}>
+              <Link href="/updateUserDetails" style={{ color: '#fff', textDecoration: 'none' }}>
+                Update User Details
+              </Link>
+            </li>
           </ul>
         </nav>
       </div>

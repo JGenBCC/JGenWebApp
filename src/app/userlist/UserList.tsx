@@ -86,7 +86,7 @@ export default function UserListClient() {
             <li key={index} className="user-item" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem" }}>
               <div className="user-details">
                 <p><strong>{index + 1}: {user.displayName}</strong></p>
-                <p>{user.phone}</p>
+                <p>{user.phone.startsWith("+91") ? user.phone.slice(3) : user.phone}</p>
                 <p>{formatDOB(user.dob)}</p>
                 <p>{user.placeOfStay}</p>
                 <p>{user.education}</p>

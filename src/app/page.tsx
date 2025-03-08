@@ -51,11 +51,7 @@ const Home = () => {
         </button>
         <nav style={{ padding: '20px' }}>
           <ul style={{ listStyleType: 'none', padding: 0 }}>
-            <li style={{ margin: '20px 0' }}>
-              <Link href="/addUser" style={{ color: '#fff', textDecoration: 'none' }}>
-                Add New Member
-              </Link>
-            </li>
+
             <li style={{ margin: '20px 0' }}>
               <Link href="/userlist" style={{ color: '#fff', textDecoration: 'none' }}>
                 View Added Members

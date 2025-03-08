@@ -6,10 +6,11 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { firebaseApp, db, storage } from "../../lib/firebase/clientApp";
 import { Header } from "../components";
 import { useAuth } from "../../context/AuthContext"; // new import
+import Image from "next/image";
 
 export default function UpdateUserDetailsForm() {
     // New states for current user and additional users state
-    const [users, setUsers] = useState<User[]>([]);
+    //const [users, setUsers] = useState<User[]>([]);
     const { user, loading } = useAuth();
 
     const [displayName, setDisplayName] = useState("");
@@ -20,8 +21,9 @@ export default function UpdateUserDetailsForm() {
     const [education, setEducation] = useState("");
     const [collegeOrCompany, setCollegeOrCompany] = useState("");
     const [photo, setPhoto] = useState<File | null>(null);
-    const [userType, setUserType] = useState("regular");
     const [docId, setDocId] = useState<string>("");
+    const [photoURL, setPhotoURL] = useState(""); // new state for photo URL
+    const [originalData, setOriginalData] = useState<any>({}); // new state for original data
 
     useEffect(() => {
         if (loading || !user || !user.userDocId) return; // ensure user info is ready
@@ -39,6 +41,17 @@ export default function UpdateUserDetailsForm() {
                 setPlaceOfStay(data.placeOfStay || "");
                 setEducation(data.education || "");
                 setCollegeOrCompany(data.collegeOrCompany || "");
+                setPhotoURL(data.photoURL || ""); // set the user's photo URL
+                setOriginalData({
+                    displayName: data.displayName || "",
+                    phone: data.phone ? data.phone.replace(/^\+91/, "") : "",
+                    dob: data.dob || "",
+                    gender: data.gender || "",
+                    placeOfStay: data.placeOfStay || "",
+                    education: data.education || "",
+                    collegeOrCompany: data.collegeOrCompany || "",
+                    photoURL: data.photoURL || ""
+                });
             }
         }
         fetchUser();
@@ -46,26 +59,46 @@ export default function UpdateUserDetailsForm() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        // Skip update if no form value has changed and no new photo is selected.
+        if (
+            !photo &&
+            displayName === originalData.displayName &&
+            phone === originalData.phone &&
+            dob === originalData.dob &&
+            gender === originalData.gender &&
+            placeOfStay === originalData.placeOfStay &&
+            education === originalData.education &&
+            collegeOrCompany === originalData.collegeOrCompany
+        ) {
+            console.log("No changes detected. Update skipped.");
+            return;
+        }
+
+        // Ensure phone number has a +91 prefix for updatePayload
+        const updatedPhone = phone.startsWith("+91") ? phone : `+91${phone}`;
+        // Prepare phone for storage without +91 prefix
+        const storagePhone = phone.startsWith("+91") ? phone.substring(3) : phone;
+
         try {
-            let photoURL: string | null = null;
+            let newPhotoURL: string | null = null;
             const updatePayload: any = {
                 displayName,
-                phone,
+                phone: updatedPhone, // use updatedPhone with +91
                 dob,
                 gender,
                 placeOfStay,
                 education,
-                collegeOrCompany,
-                userType
+                collegeOrCompany
             };
             if (photo) {
-                const storageRef = ref(storage, `UserProfilePhotos/${phone}`);
+                const storageRef = ref(storage, `UserProfilePhotos/${storagePhone}`); // use storagePhone without +91
                 await uploadBytes(storageRef, photo);
-                photoURL = await getDownloadURL(storageRef);
-                updatePayload.photo = photoURL;
+                newPhotoURL = await getDownloadURL(storageRef);
+                updatePayload.photo = newPhotoURL;
             }
-            if (docId) {
-                await updateDoc(doc(db, "users", docId), updatePayload);
+            // Use user.userDocId directly for update.
+            if (user?.userDocId) {
+                await updateDoc(doc(db, "users", user.userDocId), updatePayload);
                 console.log("Document successfully updated!");
             } else {
                 console.error("User document not found!");
@@ -78,7 +111,6 @@ export default function UpdateUserDetailsForm() {
             setEducation("");
             setCollegeOrCompany("");
             setPhoto(null);
-            setUserType("regular");
         } catch (error) {
             console.error("Error updating document: ", error);
         }
@@ -91,6 +123,7 @@ export default function UpdateUserDetailsForm() {
                 <Header />
                 <div className="background-screen">
                     <h1 className="heading">Update User Details</h1>
+                    
                     <form onSubmit={handleSubmit} className="user-form">
                         <label className="form-field">
                             Display Name:
@@ -133,9 +166,21 @@ export default function UpdateUserDetailsForm() {
                         </label>
                         <label className="form-field">
                             Photo:
-                            <input type="file" onChange={(e) => setPhoto(e.target.files ? e.target.files[0] : null)} required />
-                            <br /><br /><br />
+                            <input type="file" onChange={(e) => setPhoto(e.target.files ? e.target.files[0] : null)} />
+                            <br />
                         </label>
+                        {photoURL && (
+                            <div className="user-photo-container">
+                                <Image
+                                    src={photoURL}
+                                    alt={`${displayName}'s photo`}
+                                    className="user-photo"
+                                    width={100}
+                                    height={100}
+                                />
+                            </div>
+                        )}
+                        <br /><br /><br />
                         <button type="submit">Update</button>
                     </form>
                 </div>

@@ -97,7 +97,7 @@ export default function UpdateUserDetailsForm() {
                 const storageRef = ref(storage, `UserProfilePhotos/${storagePhone}`); // use storagePhone without +91
                 await uploadBytes(storageRef, compressedPhoto);
                 newPhotoURL = await getDownloadURL(storageRef);
-                updatePayload.photo = newPhotoURL;
+                updatePayload.photoURL = newPhotoURL;
             }
             // Use user.userDocId directly for update.
             if (user?.userDocId) {

@@ -7,6 +7,7 @@ import { firebaseApp, db, storage } from "../../lib/firebase/clientApp";
 import { Header } from "../components";
 import { useAuth } from "../../context/AuthContext"; // new import
 import Image from "next/image";
+import { compressImage } from "../utils";
 
 export default function UpdateUserDetailsForm() {
     // New states for current user and additional users state
@@ -91,8 +92,10 @@ export default function UpdateUserDetailsForm() {
                 collegeOrCompany
             };
             if (photo) {
+                // Compress the image before upload.
+                const compressedPhoto = await compressImage(photo, 0.7, 1024) as Blob;
                 const storageRef = ref(storage, `UserProfilePhotos/${storagePhone}`); // use storagePhone without +91
-                await uploadBytes(storageRef, photo);
+                await uploadBytes(storageRef, compressedPhoto);
                 newPhotoURL = await getDownloadURL(storageRef);
                 updatePayload.photo = newPhotoURL;
             }

@@ -11,6 +11,7 @@ interface Event {
   eventName: string;
   eventTitle: string;
   eventPosterURL: string;
+  eventDate: string; // new field
 }
 
 export default function NewEvents() {
@@ -20,7 +21,8 @@ export default function NewEvents() {
     const fetchEvents = async () => {
       const querySnapshot = await getDocs(collection(db, "events"));
       const eventsList = querySnapshot.docs.map(doc => doc.data() as Event);
-      setEvents(eventsList);
+      const now = new Date();
+      setEvents(eventsList.filter(event => new Date(event.eventDate) > now));
     };
 
     fetchEvents();

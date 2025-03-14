@@ -55,9 +55,9 @@ export default function AddUserForm() {
 
     return (
         <div lang="en" className="light-theme">
-            <main className="content" style={{ backgroundImage: 'url("/path/to/background-image.jpg")', backgroundSize: 'cover' }}>
-                <div className="dots" />
-                <Header />
+            <main className="content">
+                
+
                 <div className="background-screen">
                     <h1 className="heading">User Information</h1>
                     <form onSubmit={handleSubmit} className="user-form">

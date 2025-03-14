@@ -70,7 +70,7 @@ export function Header() {
       )}
 
       <header className="header">
-        <Firebase />
+        
       </header>
     </>
   );

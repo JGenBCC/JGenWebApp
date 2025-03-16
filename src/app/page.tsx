@@ -15,15 +15,12 @@ const Home = () => {
   const { user, logout, loginWithPhone, signInLoading } = useAuth();
 
   return (
-    <AppLayout pageTitle="My Page Title">
+    <AppLayout pageTitle="Home">
       <main className="content" style={{ padding: '20px' }}>
         <div className="top-right">
           {user ? (
             <div>
               <h2>Welcome, {user.displayName || user.phoneNumber.replace('+91', '')}!</h2>
-              {user.photoURL ? (
-                <Image src={user.photoURL} alt="Profile" width={50} height={50} style={{ borderRadius: "50%" }} />
-              ) : null}
               <p>Ph: {user.phoneNumber.replace('+91', '')}</p>
               <button onClick={logout} style={{ padding: "10px 20px", fontSize: "16px" }}>
                 Sign Out

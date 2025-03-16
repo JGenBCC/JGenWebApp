@@ -5,8 +5,7 @@ import { getFirestore, collection, getDocs, query, where, documentId } from "fir
 import { firebaseApp } from "../../lib/firebase/clientApp"; // Import the firebase app instance
 import Image from "next/image";
 import { useAuth } from "../../context/AuthContext"; // new import
-
-// ...existing code for Firebase initialization and User interface...
+import SidebarLayout from "../components/SidebarLayout";
 
 // Initialize Firebase
 // const app = initializeApp(firebaseConfig); // REMOVE THIS LINE
@@ -76,37 +75,41 @@ export default function UserListClient() {
   }, [user, loading]);
 
   return (
-    <main className="content userlist-content-full">
-      <div className="background-screen userlist-background">
-        <div className="top-right">
-        </div>
-        <h1 className="heading userlist-heading" style={{ marginBottom: "1rem" }}>Users List</h1>
-        <ul className="user-list">
-          {users.map((user, index) => (
-            <li key={index} className="user-item" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem" }}>
-              <div className="user-details">
-                <p><strong>{index + 1}: {user.displayName}</strong></p>
-                <p>{user.phone.startsWith("+91") ? user.phone.slice(3) : user.phone}</p>
-                <p>{formatDOB(user.dob)}</p>
-                <p>{user.placeOfStay}</p>
-                <p>{user.education}</p>
-                <p>{user.collegeOrCompany}</p>
-              </div>
-              {user.photoURL && (
-                <div className="user-photo-container">
-                  <Image
-                    src={user.photoURL}
-                    alt={`${user.displayName}'s photo`}
-                    className="user-photo"
-                    width={100}
-                    height={100}
-                  />
+    <SidebarLayout>
+      <main className="content userlist-content-full">
+        <div className="background-screen userlist-background">
+          <div className="top-right">
+          </div>
+          <h1 className="heading userlist-heading" style={{ marginBottom: "1rem" }}>
+            Users List
+          </h1>
+          <ul className="user-list">
+            {users.map((user, index) => (
+              <li key={index} className="user-item" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem" }}>
+                <div className="user-details">
+                  <p><strong>{index + 1}: {user.displayName}</strong></p>
+                  <p>{user.phone.startsWith("+91") ? user.phone.slice(3) : user.phone}</p>
+                  <p>{formatDOB(user.dob)}</p>
+                  <p>{user.placeOfStay}</p>
+                  <p>{user.education}</p>
+                  <p>{user.collegeOrCompany}</p>
                 </div>
-              )}
-            </li>
-          ))}
-        </ul>
-      </div>
-    </main>
+                {user.photoURL && (
+                  <div className="user-photo-container">
+                    <Image
+                      src={user.photoURL}
+                      alt={`${user.displayName}'s photo`}
+                      className="user-photo"
+                      width={100}
+                      height={100}
+                    />
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </main>
+    </SidebarLayout>
   );
 }

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 import { firebaseApp } from "../../lib/firebase/clientApp";
 import Image from "next/image";
+import SidebarLayout from "../components/SidebarLayout"; // new import
 
 const db = getFirestore(firebaseApp);
 
@@ -29,27 +30,28 @@ export default function NewEvents() {
   }, []);
 
   return (
-    <main className="content new-events-content">
-      <div className="background-screen new-events-background">
-        <h1 className="heading new-events-heading">New Events</h1>
-        <ul className="events-list">
-          {events.map((event, index) => (
-            <li key={index} className="event-item">
-              <p><strong>{event.eventName} :</strong> {event.eventTitle}</p>
-              {event.eventPosterURL && (
-                <Image
-                  src={event.eventPosterURL}
-                  alt={`${event.eventTitle} poster`}
-                  className="event-poster"
-                  width={200}
-                  height={200}
-                />
-              )}
-              
-            </li>
-          ))}
-        </ul>
-      </div>
-    </main>
+    <SidebarLayout>
+      <main className="content new-events-content">
+        <div className="background-screen new-events-background">
+          <h1 className="heading new-events-heading">New Events</h1>
+          <ul className="events-list">
+            {events.map((event, index) => (
+              <li key={index} className="event-item">
+                <p><strong>{event.eventName} :</strong> {event.eventTitle}</p>
+                {event.eventPosterURL && (
+                  <Image
+                    src={event.eventPosterURL}
+                    alt={`${event.eventTitle} poster`}
+                    className="event-poster"
+                    width={200}
+                    height={200}
+                  />
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </main>
+    </SidebarLayout>
   );
 }

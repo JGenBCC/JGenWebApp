@@ -5,7 +5,7 @@ import { getFirestore, collection, getDocs, query, where, documentId } from "fir
 import { firebaseApp } from "../../lib/firebase/clientApp"; // Import the firebase app instance
 import Image from "next/image";
 import { useAuth } from "../../context/AuthContext"; // new import
-import SidebarLayout from "../components/SidebarLayout";
+import AppLayout from "../components/AppLayout";
 
 // Initialize Firebase
 // const app = initializeApp(firebaseConfig); // REMOVE THIS LINE
@@ -75,7 +75,7 @@ export default function UserListClient() {
   }, [user, loading]);
 
   return (
-    <SidebarLayout>
+    <AppLayout pageTitle="View Added Members">
       <main className="content userlist-content-full">
         <div className="background-screen userlist-background">
           <div className="top-right">
@@ -110,6 +110,6 @@ export default function UserListClient() {
           </ul>
         </div>
       </main>
-    </SidebarLayout>
+    </AppLayout>
   );
 }

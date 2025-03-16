@@ -1,13 +1,12 @@
 "use client";
-import SidebarLayout from "../components/SidebarLayout";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { getFirestore, collection, getDocs, doc, updateDoc, query, where, documentId } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { firebaseApp, db, storage } from "../../lib/firebase/clientApp";
-import { Header } from "../components";
 import { useAuth } from "../../context/AuthContext";
 import Image from "next/image";
 import { compressImage } from "../utils";
+import AppLayout from "../components/AppLayout";  // Use AppLayout for proper sidebar toggle
 // ...existing imports...
 
 export default function UpdateUserDetailsForm() {
@@ -113,9 +112,8 @@ export default function UpdateUserDetailsForm() {
     };
 
     return (
-        <SidebarLayout>
+        <AppLayout pageTitle="Update User Details">
             <div className="background-screen">
-                <Header />
                 <h1 className="heading">Update User Details</h1>
                 <form onSubmit={handleSubmit} className="user-form">
                     {/* ...existing form fields... */}
@@ -177,6 +175,6 @@ export default function UpdateUserDetailsForm() {
                     <button type="submit">Update</button>
                 </form>
             </div>
-        </SidebarLayout>
+        </AppLayout>
     );
 }

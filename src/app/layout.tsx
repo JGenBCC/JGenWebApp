@@ -1,15 +1,20 @@
 import type { Metadata } from "next";
 import { AuthProvider } from "../context/AuthContext";
 import "../styles/globals.css";
-import { Header } from "./components";
-//import Header from "./components/Header";
+import HeaderWrapper from "./components/HeaderWrapper"; // Updated import
 
 export const metadata: Metadata = {
   title: "J-Gen",
   description: "",
 };
 
-export default function RootLayout({children,}: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  // Define a toggle handler for the header button
+  const toggleSidebar = () => {
+    // ...existing sidebar toggle logic or placeholder...
+    console.log("Toggle sidebar");
+  };
+
   return (
     <html lang="en" className="light-theme">
       <head>
@@ -22,7 +27,7 @@ export default function RootLayout({children,}: Readonly<{ children: React.React
       <body>
         <AuthProvider>
           <div className="dots" />
-          <Header />
+          <HeaderWrapper pageTitle="My Page Title" />
           {children}
           <div className="bottom-gradient" />
         </AuthProvider>

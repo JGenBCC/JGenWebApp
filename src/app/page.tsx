@@ -7,9 +7,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useAuth } from "../context/AuthContext";
 import Image from 'next/image';
-import SidebarLayout from "./components/SidebarLayout";
-
-// ...existing code removed: local isSidebarOpen, toggleSidebar and duplicate sidebar markup...
+import AppLayout from "./components/AppLayout";
 
 const Home = () => {
   const router = useRouter();
@@ -17,8 +15,7 @@ const Home = () => {
   const { user, logout, loginWithPhone, signInLoading } = useAuth();
 
   return (
-    <SidebarLayout>
-      {/* Main Content Only */}
+    <AppLayout pageTitle="My Page Title">
       <main className="content" style={{ padding: '20px' }}>
         <div className="top-right">
           {user ? (
@@ -58,11 +55,10 @@ const Home = () => {
             </p>
           </article>
         </section>
-        {/* Recaptcha container required for phone auth */}
         <div id="recaptcha-container"></div>
         <ToastContainer />
       </main>
-    </SidebarLayout>
+    </AppLayout>
   );
 };
 

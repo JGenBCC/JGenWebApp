@@ -1,37 +1,37 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 
 interface SidebarLayoutProps {
-	children: React.ReactNode;
+  children: React.ReactNode;
+  isSidebarOpen: boolean;
+  toggleSidebar: () => void;
 }
 
-export default function SidebarLayout({ children }: SidebarLayoutProps) {
-  const [isSidebarOpen, setSidebarOpen] = useState(false);
-  const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
-
+export default function SidebarLayout({ children, isSidebarOpen, toggleSidebar }: SidebarLayoutProps) {
   return (
-    <div style={{ display: 'flex' }}>
-      {/* Sidebar Navigation */}
+    <>
       <div
         style={{
           position: 'fixed',
           top: 0,
-          left: isSidebarOpen ? 0 : '-250px',
+          left: 0,
           height: '100%',
           width: '250px',
           backgroundColor: '#111',
           color: '#fff',
-          transition: 'left 0.3s ease',
-          paddingTop: '20px',
-          zIndex: 1000,
+          transition: 'transform 0.3s ease',
+          transform: isSidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
+          zIndex: 3000,
+          opacity: 1,
         }}
       >
         <button
           onClick={toggleSidebar}
           style={{
-            marginLeft: '200px',
+            position: 'absolute',
+            top: '10px',
+            right: '10px',
             background: 'none',
             border: 'none',
             color: '#fff',
@@ -77,33 +77,9 @@ export default function SidebarLayout({ children }: SidebarLayoutProps) {
           </ul>
         </nav>
       </div>
-
-      {/* Main Content */}
-      <div style={{ marginLeft: isSidebarOpen ? '250px' : '0', transition: 'margin-left 0.05s ease', width: '100%' }}>
-        <header
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'flex-start',
-            padding: '10px',
-            background: '#f1f1f1'
-          }}
-        >
-          <button
-            onClick={toggleSidebar}
-            style={{
-              fontSize: '24px',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer'
-            }}
-            aria-label="Open sidebar"
-          >
-            &#9776;
-          </button>
-        </header>
-        <main>{children}</main>
+      <div style={{ marginLeft: isSidebarOpen ? '250px' : '0', transition: 'margin-left 0.05s ease' }}>
+        {children}
       </div>
-    </div>
+    </>
   );
 }

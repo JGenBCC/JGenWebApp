@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 import { firebaseApp } from "../../lib/firebase/clientApp";
 import Image from "next/image";
-import SidebarLayout from "../components/SidebarLayout";
+import AppLayout from "../components/AppLayout";
 
 const db = getFirestore(firebaseApp);
 
@@ -28,7 +28,7 @@ export default function PastEvents() {
   }, []);
 
   return (
-    <SidebarLayout>
+    <AppLayout pageTitle="Past Events">
       <main className="content past-events-content">
         <div className="background-screen past-events-background">
           <h1 className="heading past-events-heading">Past Events</h1>
@@ -50,6 +50,6 @@ export default function PastEvents() {
           </ul>
         </div>
       </main>
-    </SidebarLayout>
+    </AppLayout>
   );
 }

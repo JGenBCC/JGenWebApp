@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 import { firebaseApp } from "../../lib/firebase/clientApp";
 import Image from "next/image";
-import SidebarLayout from "../components/SidebarLayout"; // new import
+import AppLayout from "../components/AppLayout";
 
 const db = getFirestore(firebaseApp);
 
@@ -12,7 +12,7 @@ interface Event {
   eventName: string;
   eventTitle: string;
   eventPosterURL: string;
-  eventDate: string; // new field
+  eventDate: string;
 }
 
 export default function NewEvents() {
@@ -30,8 +30,8 @@ export default function NewEvents() {
   }, []);
 
   return (
-    <SidebarLayout>
-      <main className="content new-events-content">
+    <AppLayout pageTitle="New Events">
+      <main>
         <div className="background-screen new-events-background">
           <h1 className="heading new-events-heading">New Events</h1>
           <ul className="events-list">
@@ -52,6 +52,6 @@ export default function NewEvents() {
           </ul>
         </div>
       </main>
-    </SidebarLayout>
+    </AppLayout>
   );
 }

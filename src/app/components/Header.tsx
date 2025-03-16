@@ -1,131 +1,65 @@
 "use client";
+import React from "react";
+import { useAuth } from "../../context/AuthContext"; // new import
+import Link from "next/link"; // new import
 
-import { usePathname } from "next/navigation";
-
-import { Arrow } from "./Arrow";
-import { Firebase } from "./Firebase";
-
-import React, { useState, useEffect } from "react";
-import Link from "next/link";
-import {
-	signInWithGoogle,
-	signOut,
-	onAuthStateChanged
-} from "../../lib/firebase/auth";
-import { useRouter } from "next/navigation";
-import { firebaseConfig } from "../../lib/firebase/config";
-
-/*function useUserSession(initialUser) {
-	// The initialUser comes from the server via a server component
-	const [user, setUser] = useState(initialUser);
-	const router = useRouter();
-
-	// Register the service worker that sends auth state back to server
-	// The service worker is built with npm run build-service-worker
-	useEffect(() => {
-			if ("serviceWorker" in navigator) {
-					const serializedFirebaseConfig = encodeURIComponent(JSON.stringify(firebaseConfig));
-					const serviceWorkerUrl = `/auth-service-worker.js?firebaseConfig=${serializedFirebaseConfig}`
-			
-			  navigator.serviceWorker
-					.register(serviceWorkerUrl)
-					.then((registration) => console.log("scope is: ", registration.scope));
-			}
-	  }, []);
-
-	useEffect(() => {
-			const unsubscribe = onAuthStateChanged((authUser) => {
-					setUser(authUser)
-			})
-
-			return () => unsubscribe()
-			// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
-
-	useEffect(() => {
-			onAuthStateChanged((authUser) => {
-					if (user === undefined) return
-
-					// refresh when user changed to ease testing
-					if (user?.email !== authUser?.email) {
-							router.refresh()
-					}
-			})
-			// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [user])
-
-	return user;
-}
-*/
-
-export function Header() {
-  const pathname = usePathname();
-
-  return (
-    <>
-      {pathname !== "/" && (
-        <Link className="button back-button" href="/">
-          <Arrow /> Back to home
-        </Link>
-      )}
-
-      <header className="header">
-        
-      </header>
-    </>
-  );
+interface HeaderProps {
+    pageTitle: string;
+    onSidebarToggle: () => void;
+    isSidebarOpen: boolean;
 }
 
+export default function Header({ pageTitle, onSidebarToggle, isSidebarOpen }: HeaderProps) {
+    const { user } = useAuth(); // get user from context
+    const userPhoto = user?.photoURL || "/default-user.png"; // use user's photoURL
 
-/*export default function Header({initialUser}) {
-
-	const user = useUserSession(initialUser) ;
-
-	const handleSignOut = event => {
-		event.preventDefault();
-		signOut();
-	};
-
-	const handleSignIn = event => {
-		event.preventDefault();
-		signInWithGoogle();
-	};
-
-	return (
-		<header>
-			<Link href="/" className="logo">
-				<img src="/friendly-eats.svg" alt="FriendlyEats" />
-				Friendly Eats
-			</Link>
-			{user ? (
-				<>
-					<div className="profile">
-						<p>
-							<img className="profileImage" src={user.photoURL || "/profile.svg"} alt={user.email} />
-							{user.displayName}
-						</p>
-
-						<div className="menu">
-							...
-							<ul>
-								<li>{user.displayName}</li>
-
-								<li>
-									<a href="#" onClick={handleSignOut}>
-										Sign Out
-									</a>
-								</li>
-							</ul>
-						</div>
-					</div>
-				</>
-			) : (
-				<div className="profile"><a href="#" onClick={handleSignIn}>
-					<img src="/profile.svg" alt="A placeholder user image" />
-					Sign In with Google
-				</a></div>
-			)}
-		</header>
-	);
+    return (
+        <>
+            <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                height: '60px',
+                backgroundColor: '#f1f1f1',
+                padding: '0 20px',
+                position: 'relative', // add positioning context
+                zIndex: 1100 // ensure header appears over the sidebar
+            }}>
+                {/* Left - Sidebar toggle */}
+                <div>
+                    <button
+                        onClick={onSidebarToggle}
+                        style={{
+                            background: 'none',
+                            border: 'none',
+                            fontSize: '24px',
+                            cursor: 'pointer'
+                        }}
+                        aria-label="Toggle sidebar"
+                    >
+                        {isSidebarOpen ? <>&times;</> : <>&#9776;</>}
+                    </button>
+                </div>
+                {/* Center - Page title */}
+                <div>
+                    <h1 style={{ margin: 0 }}>{pageTitle}</h1>
+                </div>
+                {/* Right - User photo */}
+                <div>
+                    <Link href="/updateUserDetails">
+                        <img
+                            src={userPhoto}
+                            alt="User"
+                            style={{
+                                height: '40px',
+                                width: '40px',
+                                borderRadius: '50%',
+                                cursor: 'pointer'
+                            }}
+                        />
+                    </Link>
+                </div>
+            </div>
+        </>
+    );
 }
-*/

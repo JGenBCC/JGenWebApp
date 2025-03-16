@@ -15,7 +15,7 @@ const Home = () => {
   const { user, logout, loginWithPhone, signInLoading } = useAuth();
 
   return (
-    <AppLayout pageTitle="Home">
+    <AppLayout pageTitle="J-Gen">
       <main className="content" style={{ padding: '20px' }}>
         <div className="top-right">
           {user ? (

@@ -15,10 +15,14 @@ export default function AppLayout({ children, pageTitle }: AppLayoutProps) {
 
   return (
     <>
-      <Header pageTitle={pageTitle} isSidebarOpen={isSidebarOpen} onSidebarToggle={toggleSidebar} />
-      <SidebarLayout isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar}>
-        {children}
-      </SidebarLayout>
+      <div style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 1000 }}>
+        <Header pageTitle={pageTitle} isSidebarOpen={isSidebarOpen} onSidebarToggle={toggleSidebar} />
+      </div>
+      <div style={{ marginTop: "60px" }}>
+        <SidebarLayout isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar}>
+          {children}
+        </SidebarLayout>
+      </div>
     </>
   );
 }

@@ -2,6 +2,7 @@
 import React from "react";
 import { useAuth } from "../../context/AuthContext"; // new import
 import Link from "next/link"; // new import
+import Image from "next/image";
 
 interface HeaderProps {
     pageTitle: string;
@@ -47,14 +48,14 @@ export default function Header({ pageTitle, onSidebarToggle, isSidebarOpen }: He
                 {/* Right - User photo */}
                 <div>
                     <Link href="/updateUserDetails">
-                        <img
+                        <Image 
                             src={userPhoto}
                             alt="User"
+                            width={40}
+                            height={40}
                             style={{
-                                height: '40px',
-                                width: '40px',
-                                borderRadius: '50%',
-                                cursor: 'pointer'
+                                borderRadius: "50%",
+                                cursor: "pointer"
                             }}
                         />
                     </Link>

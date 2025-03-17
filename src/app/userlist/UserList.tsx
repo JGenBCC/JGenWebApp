@@ -75,14 +75,11 @@ export default function UserListClient() {
   }, [user, loading]);
 
   return (
-    <AppLayout pageTitle="View Added Members">
+    <AppLayout pageTitle="Added Members">
       <main className="content userlist-content-full">
         <div className="background-screen userlist-background">
           <div className="top-right">
           </div>
-          <h1 className="heading userlist-heading" style={{ marginBottom: "1rem" }}>
-            Users List
-          </h1>
           <ul className="user-list">
             {users.map((user, index) => (
               <li key={index} className="user-item" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem" }}>

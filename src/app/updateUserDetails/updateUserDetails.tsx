@@ -114,7 +114,6 @@ export default function UpdateUserDetailsForm() {
     return (
         <AppLayout pageTitle="Update User Details">
             <div className="background-screen">
-                <h1 className="heading">Update User Details</h1>
                 <form onSubmit={handleSubmit} className="user-form">
                     {/* ...existing form fields... */}
                     <label className="form-field">

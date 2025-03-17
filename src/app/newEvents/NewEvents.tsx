@@ -33,7 +33,6 @@ export default function NewEvents() {
     <AppLayout pageTitle="New Events">
       <main>
         <div className="background-screen new-events-background">
-          <h1 className="heading new-events-heading">New Events</h1>
           <ul className="events-list">
             {events.map((event, index) => (
               <li key={index} className="event-item">

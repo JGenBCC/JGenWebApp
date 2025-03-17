@@ -31,7 +31,6 @@ export default function PastEvents() {
     <AppLayout pageTitle="Past Events">
       <main className="content past-events-content">
         <div className="background-screen past-events-background">
-          <h1 className="heading past-events-heading">Past Events</h1>
           <ul className="events-list">
             {events.map((event, index) => (
               <li key={index} className="event-item">

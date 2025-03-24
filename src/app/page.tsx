@@ -38,10 +38,10 @@ const Home = () => {
         <p>{message}</p>
         <section className="features" style={{ display: 'flex', gap: '20px' }}>
           <article className="card">
-            <h2>Add New Member</h2>
+            <h2>View New Events</h2>
             <p>
-              Join us for exciting community events and activities. Add your profile details here{" "}
-              <Link href="/addUser"><code>/addUser</code></Link>.
+              Join us for exciting community events and activities. See the new events at J-Gen{" "}
+              <Link href="/newEvents"><code>/newEvents</code></Link>.
             </p>
           </article>
           <article className="card">

@@ -65,8 +65,13 @@ export default function SidebarLayout({ children, isSidebarOpen, toggleSidebar }
               </Link>
             </li>
             <li style={{ margin: '20px 0' }}>
-              <Link href="/enterAttendence" style={{ color: '#fff', textDecoration: 'none' }}>
-                Enter Attendence
+              <Link href="/addEvent" style={{ color: '#fff', textDecoration: 'none' }}>
+                Add An Event
+              </Link>
+            </li>
+            <li style={{ margin: '20px 0' }}>
+              <Link href="/enterAttendance" style={{ color: '#fff', textDecoration: 'none' }}>
+                Enter Attendance
               </Link>
             </li>
             <li style={{ margin: '20px 0' }}>

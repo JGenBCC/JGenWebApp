@@ -49,6 +49,7 @@ export default function Header({ pageTitle, onSidebarToggle, isSidebarOpen }: He
                 <div>
                     <Link href="/updateUserDetails">
                         <Image 
+                            crossOrigin="anonymous" // added to enable cross-origin requests
                             src={userPhoto}
                             alt="User"
                             width={40}

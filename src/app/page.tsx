@@ -17,7 +17,8 @@ const Home = () => {
   return (
     <AppLayout pageTitle="J-Gen">
       <main className="content" style={{ padding: '20px' }}>
-        <div className="top-right">
+        <h1 className="heading">J-Gen Youth Group Activities</h1>
+        <div style={{ textAlign: 'center' }}>
           {user ? (
             <div>
               <h2>Welcome, {user.displayName || user.phoneNumber.replace('+91', '')}!</h2>
@@ -34,7 +35,6 @@ const Home = () => {
             </div>
           )}
         </div>
-        <h1 className="heading">J-Gen Youth Group Activities</h1>
         <p>{message}</p>
         <section className="features" style={{ display: 'flex', gap: '20px' }}>
           <article className="card">

@@ -6,6 +6,7 @@ import { firebaseApp } from "../../lib/firebase/clientApp"; // Import the fireba
 import Image from "next/image";
 import { useAuth } from "../../context/AuthContext"; // new import
 import AppLayout from "../components/AppLayout";
+import CustomImage from "../../components/CustomImage";
 
 // Initialize Firebase
 // const app = initializeApp(firebaseConfig); // REMOVE THIS LINE
@@ -93,7 +94,7 @@ export default function UserListClient() {
                 </div>
                 {user.photoURL && (
                   <div className="user-photo-container">
-                    <Image
+                    <CustomImage
                       src={user.photoURL}
                       alt={`${user.displayName}'s photo`}
                       className="user-photo"

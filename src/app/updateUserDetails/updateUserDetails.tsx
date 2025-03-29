@@ -7,6 +7,7 @@ import { useAuth } from "../../context/AuthContext";
 import Image from "next/image";
 import { compressImage } from "../utils";
 import AppLayout from "../components/AppLayout";  // Use AppLayout for proper sidebar toggle
+import CustomImage from "../../components/CustomImage";
 // ...existing imports...
 
 export default function UpdateUserDetailsForm() {
@@ -162,7 +163,7 @@ export default function UpdateUserDetailsForm() {
                     </label>
                     {photoURL && (
                         <div className="user-photo-container">
-                            <Image
+                            <CustomImage
                                 src={photoURL}
                                 alt={`${displayName}'s photo`}
                                 className="user-photo"

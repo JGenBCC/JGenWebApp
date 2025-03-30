@@ -6,9 +6,24 @@ interface SidebarLayoutProps {
   children: React.ReactNode;
   isSidebarOpen: boolean;
   toggleSidebar: () => void;
+  user: { role: string } | null; // Add user prop
 }
 
-export default function SidebarLayout({ children, isSidebarOpen, toggleSidebar }: SidebarLayoutProps) {
+export default function SidebarLayout({ children, isSidebarOpen, toggleSidebar, user }: SidebarLayoutProps) {
+  const menuItems = [
+    { name: "Home", path: "/" },
+    { name: "View Added Members", path: "/userlist" },
+    { name: "New Events", path: "/newEvents" },
+    { name: "Past Events", path: "/pastEvents" },
+    { name: "Add An Event", path: "/addEvent" },
+    { name: "Enter Attendance", path: "/enterAttendance" },
+    { name: "Update User Details", path: "/updateUserDetails" },
+  ];
+
+  const filteredMenuItems = user?.role === "admin"
+    ? menuItems
+    : menuItems.filter(item => item.path !== "/addEvent");
+
   return (
     <>
       <div
@@ -44,41 +59,13 @@ export default function SidebarLayout({ children, isSidebarOpen, toggleSidebar }
         </button>
         <nav style={{ padding: '20px' }}>
           <ul style={{ listStyleType: 'none', padding: 0 }}>
-            <li style={{ margin: '20px 0' }}>
-              <Link href="/" style={{ color: '#fff', textDecoration: 'none' }}>
-                Home
-              </Link>
-            </li>
-            <li style={{ margin: '20px 0' }}>
-              <Link href="/userlist" style={{ color: '#fff', textDecoration: 'none' }}>
-                View Added Members
-              </Link>
-            </li>
-            <li style={{ margin: '20px 0' }}>
-              <Link href="/newEvents" style={{ color: '#fff', textDecoration: 'none' }}>
-                New Events
-              </Link>
-            </li>
-            <li style={{ margin: '20px 0' }}>
-              <Link href="/pastEvents" style={{ color: '#fff', textDecoration: 'none' }}>
-                Past Events
-              </Link>
-            </li>
-            <li style={{ margin: '20px 0' }}>
-              <Link href="/addEvent" style={{ color: '#fff', textDecoration: 'none' }}>
-                Add An Event
-              </Link>
-            </li>
-            <li style={{ margin: '20px 0' }}>
-              <Link href="/enterAttendance" style={{ color: '#fff', textDecoration: 'none' }}>
-                Enter Attendance
-              </Link>
-            </li>
-            <li style={{ margin: '20px 0' }}>
-              <Link href="/updateUserDetails" style={{ color: '#fff', textDecoration: 'none' }}>
-                Update User Details
-              </Link>
-            </li>
+            {filteredMenuItems.map(item => (
+              <li key={item.path} style={{ margin: '20px 0' }}>
+                <Link href={item.path} style={{ color: '#fff', textDecoration: 'none' }}>
+                  {item.name}
+                </Link>
+              </li>
+            ))}
           </ul>
         </nav>
       </div>

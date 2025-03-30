@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "../../context/AuthContext";
 import Header from "./Header";
 import SidebarLayout from "./SidebarLayout";
@@ -13,6 +13,7 @@ interface AppLayoutProps {
 export default function AppLayout({ children, pageTitle }: AppLayoutProps) {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const pathname = usePathname(); // Use usePathname to get the current path
 
   useEffect(() => {
     if (!loading) {
@@ -24,9 +25,12 @@ export default function AppLayout({ children, pageTitle }: AppLayoutProps) {
         router.push("/updateUserDetails");
       } else if (!user) {
         router.push("/");
+      } else if (pathname === "/addEvent" && user.role !== "admin") {
+        // Redirect non-admin users away from the addEvent page
+        router.push("/");
       }
     }
-  }, [loading, user, router]);
+  }, [loading, user, router, pathname]); // Add pathname to dependencies
 
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const toggleSidebar = () => setSidebarOpen(prev => !prev);
@@ -37,7 +41,7 @@ export default function AppLayout({ children, pageTitle }: AppLayoutProps) {
         <Header pageTitle={pageTitle} isSidebarOpen={isSidebarOpen} onSidebarToggle={toggleSidebar} />
       </div>
       <div style={{ marginTop: "60px" }}>
-        <SidebarLayout isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar}>
+        <SidebarLayout isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} user={user}>
           {children}
         </SidebarLayout>
       </div>

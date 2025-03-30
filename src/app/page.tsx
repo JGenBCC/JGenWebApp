@@ -21,8 +21,17 @@ const Home = () => {
         <div style={{ textAlign: 'center' }}>
           {user ? (
             <div>
-              <h2>Welcome, {user.displayName || user.phoneNumber.replace('+91', '')}!</h2>
-              <p>Ph: {user.phoneNumber.replace('+91', '')}</p>
+              <h2 style={{ marginBottom: '10px' }}>
+                Welcome, {user.displayName || user.phoneNumber.replace('+91', '')}!
+              </h2>
+              <p style={{ marginBottom: '10px' }}>
+                Ph: {user.phoneNumber.replace('+91', '')}
+              </p>
+              {(user.userType === 'admin' || user.userType === 'coord') && (
+                <p style={{ marginBottom: '10px' }}>
+                  User Type: {user.userType}
+                </p>
+              )}
               <button onClick={logout} style={{ padding: "10px 20px", fontSize: "16px" }}>
                 Sign Out
               </button>

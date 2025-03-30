@@ -1,5 +1,7 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "../../context/AuthContext";
 import Header from "./Header";
 import SidebarLayout from "./SidebarLayout";
 
@@ -9,7 +11,15 @@ interface AppLayoutProps {
 }
 
 export default function AppLayout({ children, pageTitle }: AppLayoutProps) {
-  // Set default sidebar state to false so it starts closed
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push("/");
+    }
+  }, [loading, user, router]);
+
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const toggleSidebar = () => setSidebarOpen(prev => !prev);
 

@@ -13,7 +13,6 @@ import CustomImage from "../../components/CustomImage";
 export default function UpdateUserDetailsForm() {
     const { user, loading } = useAuth();
     const [displayName, setDisplayName] = useState("");
-    const [phone, setPhone] = useState("");
     const [dob, setDob] = useState("");
     const [gender, setGender] = useState("");
     const [placeOfStay, setPlaceOfStay] = useState("");
@@ -34,7 +33,6 @@ export default function UpdateUserDetailsForm() {
                 setDocId(userDoc.id);
                 const data = userDoc.data();
                 setDisplayName(data.displayName || "");
-                setPhone(data.phone ? data.phone.replace(/^\+91/, "") : "");
                 setDob(data.dob || "");
                 setGender(data.gender || "");
                 setPlaceOfStay(data.placeOfStay || "");
@@ -43,7 +41,6 @@ export default function UpdateUserDetailsForm() {
                 setPhotoURL(data.photoURL || "");
                 setOriginalData({
                     displayName: data.displayName || "",
-                    phone: data.phone ? data.phone.replace(/^\+91/, "") : "",
                     dob: data.dob || "",
                     gender: data.gender || "",
                     placeOfStay: data.placeOfStay || "",
@@ -61,7 +58,6 @@ export default function UpdateUserDetailsForm() {
         if (
             !photo &&
             displayName === originalData.displayName &&
-            phone === originalData.phone &&
             dob === originalData.dob &&
             gender === originalData.gender &&
             placeOfStay === originalData.placeOfStay &&
@@ -72,14 +68,10 @@ export default function UpdateUserDetailsForm() {
             return;
         }
 
-        const updatedPhone = phone.startsWith("+91") ? phone : `+91${phone}`;
-        const storagePhone = phone.startsWith("+91") ? phone.substring(3) : phone;
-
         try {
             let newPhotoURL: string | null = null;
             const updatePayload: any = {
                 displayName,
-                phone: updatedPhone,
                 dob,
                 gender,
                 placeOfStay,
@@ -88,7 +80,8 @@ export default function UpdateUserDetailsForm() {
             };
             if (photo) {
                 const compressedPhoto = await compressImage(photo, 0.7, 1024) as Blob;
-                const storageRef = ref(storage, `UserProfilePhotos/${storagePhone}`);
+                const sanitizedPhoneNumber = user?.phoneNumber?.replace(/^\+91/, ""); // Remove +91 prefix
+                const storageRef = ref(storage, `UserProfilePhotos/${sanitizedPhoneNumber}`);
                 await uploadBytes(storageRef, compressedPhoto);
                 newPhotoURL = await getDownloadURL(storageRef);
                 updatePayload.photoURL = newPhotoURL;
@@ -100,7 +93,6 @@ export default function UpdateUserDetailsForm() {
                 console.error("User document not found!");
             }
             setDisplayName("");
-            setPhone("");
             setDob("");
             setGender("");
             setPlaceOfStay("");
@@ -120,11 +112,6 @@ export default function UpdateUserDetailsForm() {
                     <label className="form-field">
                         Display Name:
                         <input type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)} required />
-                        {/* ...existing code... */}
-                    </label>
-                    <label className="form-field">
-                        Phone Number:
-                        <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required />
                         {/* ...existing code... */}
                     </label>
                     <label className="form-field">

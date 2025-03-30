@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { signOut, onAuthStateChanged, getRedirectResult, RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { auth } from "../../firebase";
-import { getFirestore, collection, getDocs, query, where, documentId } from "firebase/firestore";
+import { getFirestore, collection, getDocs, query, where, documentId, addDoc } from "firebase/firestore";
 import { firebaseApp } from "../lib/firebase/clientApp"; // Import the firebase app instance
 
 const db = getFirestore(firebaseApp);
@@ -43,7 +43,8 @@ export const AuthProvider = ({ children }) => {
                 gender: firestoreUserData.gender,
                 photoURL: firestoreUserData.photoURL,
                 userType: firestoreUserData.userType,
-                userDocId: userSnapshot.docs[0].id // new property
+                userDocId: userSnapshot.docs[0].id,
+                isProfileComplete: !!(firestoreUserData.displayName && firestoreUserData.gender && firestoreUserData.photoURL) // new property
               });
             }
           })
@@ -100,8 +101,33 @@ export const AuthProvider = ({ children }) => {
             gender: firestoreUserData.gender,
             photoURL: firestoreUserData.photoURL,
             userType: firestoreUserData.userType,
-            userDocId: userSnapshot.docs[0].id  // new property
+            userDocId: userSnapshot.docs[0].id,
+            isProfileComplete: !!(firestoreUserData.displayName && firestoreUserData.gender && firestoreUserData.photoURL) // new property
           });
+        }
+        else {
+          // User doesn't exist, handle accordingly
+          console.log("User does not exist in Firestore. Creating new user with phone number " + phoneNumber);
+          
+          // Create a new user in Firestore with the phone number
+          const userRef = collection(db, "users");
+          const newUser = {
+            phone: phoneNumber,
+            displayName: null,
+            gender: null,
+            photoURL: null,
+            userType: "regular", // Default user type
+          };
+
+          try {
+            const docRef = await addDoc(userRef, newUser); // Use addDoc here
+            console.log("New user created with ID:", docRef.id);
+
+            // Redirect to updateUserDetails.tsx page
+            window.location.href = "/updateUserDetails";
+          } catch (error) {
+            console.error("Error creating new user:", error);
+          }
         }
       }
     } catch (error) {

@@ -15,8 +15,16 @@ export default function AppLayout({ children, pageTitle }: AppLayoutProps) {
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.push("/");
+    if (!loading) {
+      if (user === undefined) {
+        // Wait until the user state is fully initialized
+        return;
+      }
+      if (user && user.userDocId && !user.isProfileComplete) {
+        router.push("/updateUserDetails");
+      } else if (!user) {
+        router.push("/");
+      }
     }
   }, [loading, user, router]);
 

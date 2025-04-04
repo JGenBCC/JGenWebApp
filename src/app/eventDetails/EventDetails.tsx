@@ -2,7 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getFirestore, collection, getDocs, doc, getDoc } from "firebase/firestore";
+import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { firebaseApp } from "../../lib/firebase/clientApp";
 import AppLayout from "../components/AppLayout";
 import CustomImage from "../../components/CustomImage";
@@ -10,14 +10,14 @@ import CustomImage from "../../components/CustomImage";
 const db = getFirestore(firebaseApp);
 
 interface Event {
-  docId: string; // Include docId from Firestore
+  docId: string;
   eventName: string;
   eventTitle: string;
   eventPosterURL: string;
   eventDate: string;
-  eventDescription: string; // Add more fields as needed
-  eventPlace: string; // New field
-  eventChiefGuest: string; // New field
+  eventDescription: string;
+  eventPlace: string;
+  eventChiefGuest: string;
 }
 
 export default function EventDetails() {
@@ -29,13 +29,13 @@ export default function EventDetails() {
     const fetchEvent = async () => {
       if (!eventDocId) return;
 
-      const docRef = doc(db, "events", eventDocId); // Reference the specific document
+      const docRef = doc(db, "events", eventDocId);
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
-        setEvent({ docId: docSnap.id, ...docSnap.data() } as Event); // Set the event with docId
+        setEvent({ docId: docSnap.id, ...docSnap.data() } as Event);
       } else {
-        setEvent(null); // Handle case where document does not exist
+        setEvent(null);
       }
     };
 
@@ -53,8 +53,8 @@ export default function EventDetails() {
           <h1>{event.eventName}</h1>
           <p><strong>Title:</strong> {event.eventTitle}</p>
           <p><strong>Date:</strong> {event.eventDate}</p>
-          <p><strong>Place:</strong> {event.eventPlace}</p> {/* Display eventPlace */}
-          <p><strong>Chief Guest:</strong> {event.eventChiefGuest}</p> {/* Display eventChiefGuest */}
+          <p><strong>Place:</strong> {event.eventPlace}</p>
+          <p><strong>Chief Guest:</strong> {event.eventChiefGuest}</p>
           <p><strong>Description:</strong> {event.eventDescription}</p>
           {event.eventPosterURL && (
             <CustomImage

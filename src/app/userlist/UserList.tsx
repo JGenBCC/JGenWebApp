@@ -7,6 +7,7 @@ import Image from "next/image";
 import { useAuth } from "../../context/AuthContext"; // new import
 import AppLayout from "../components/AppLayout";
 import CustomImage from "../../components/CustomImage";
+import { useRouter } from "next/navigation";
 
 // Initialize Firebase
 // const app = initializeApp(firebaseConfig); // REMOVE THIS LINE
@@ -29,6 +30,7 @@ interface User {
 export default function UserListClient() {
   const [users, setUsers] = useState<User[]>([]);
   const { user, loading } = useAuth(); // using current user from AuthProvider
+  const router = useRouter();
 
   // Helper function to format date as dd-mm-yyyy
   function formatDOB(dob: string): string {
@@ -75,6 +77,10 @@ export default function UserListClient() {
     fetchUsers();
   }, [user, loading]);
 
+  const handleUserClick = (userPhone: string) => {
+    router.push(`/userDetails?phone=${encodeURIComponent(userPhone)}`);
+  };
+
   return (
     <AppLayout pageTitle="Added Members">
       <main className="content userlist-content-full">
@@ -83,7 +89,12 @@ export default function UserListClient() {
           </div>
           <ul className="user-list">
             {users.map((user, index) => (
-              <li key={index} className="user-item" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem" }}>
+              <li
+                key={index}
+                className="user-item"
+                style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem", cursor: "pointer" }}
+                onClick={() => handleUserClick(user.phone)}
+              >
                 <div className="user-details">
                   <p><strong>{index + 1}: {user.displayName}</strong></p>
                   <p>{user.phone.startsWith("+91") ? user.phone.slice(3) : user.phone}</p>

@@ -23,6 +23,7 @@ const nextConfig = {
   async rewrites() {
     return [
       { source: '/eventDetails', destination: '/src/app/eventDetails/EventDetails' },
+      { source: '/userDetails', destination: '/src/app/userDetails/UserDetails' },
     ];
   },
 };

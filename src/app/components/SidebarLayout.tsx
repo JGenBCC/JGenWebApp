@@ -6,7 +6,7 @@ interface SidebarLayoutProps {
   children: React.ReactNode;
   isSidebarOpen: boolean;
   toggleSidebar: () => void;
-  user: { role: string } | null; // Add user prop
+  user: { userType: string } | null; // Add user prop
 }
 
 export default function SidebarLayout({ children, isSidebarOpen, toggleSidebar, user }: SidebarLayoutProps) {
@@ -20,9 +20,9 @@ export default function SidebarLayout({ children, isSidebarOpen, toggleSidebar, 
     { name: "Update User Details", path: "/updateUserDetails" },
   ];
 
-  const filteredMenuItems = user?.role === "admin"
-    ? menuItems
-    : menuItems.filter(item => item.path !== "/addEvent");
+  const filteredMenuItems = user?.userType === "admin"
+    ? menuItems // Include all menu items for admin users
+    : menuItems.filter(item => item.path !== "/addEvent"); // Exclude "/addEvent" for non-admin users
 
   return (
     <>

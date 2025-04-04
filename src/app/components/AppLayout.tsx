@@ -25,7 +25,7 @@ export default function AppLayout({ children, pageTitle }: AppLayoutProps) {
         router.push("/updateUserDetails");
       } else if (!user) {
         router.push("/");
-      } else if (pathname === "/addEvent" && user.role !== "admin") {
+      } else if (pathname === "/addEvent" && user.userType !== "admin") {
         // Redirect non-admin users away from the addEvent page
         router.push("/");
       }

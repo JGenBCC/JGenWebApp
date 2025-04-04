@@ -20,6 +20,11 @@ const nextConfig = {
       },
     ];
   },
+  async rewrites() {
+    return [
+      { source: '/eventDetails', destination: '/src/app/eventDetails/EventDetails' },
+    ];
+  },
 };
 
 module.exports = nextConfig;

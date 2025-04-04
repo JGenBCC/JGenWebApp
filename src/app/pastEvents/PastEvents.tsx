@@ -3,13 +3,14 @@
 import React, { useEffect, useState } from "react";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 import { firebaseApp } from "../../lib/firebase/clientApp";
-import Image from "next/image";
 import AppLayout from "../components/AppLayout";
 import CustomImage from "../../components/CustomImage";
+import { useRouter } from "next/navigation";
 
 const db = getFirestore(firebaseApp);
 
 interface Event {
+  docId: string; // Include docId from Firestore
   eventName: string;
   eventTitle: string;
   eventPosterURL: string;
@@ -17,16 +18,24 @@ interface Event {
 
 export default function PastEvents() {
   const [events, setEvents] = useState<Event[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchEvents = async () => {
       const querySnapshot = await getDocs(collection(db, "events"));
-      const eventsList = querySnapshot.docs.map(doc => doc.data() as Event);
+      const eventsList = querySnapshot.docs.map(doc => ({
+        docId: doc.id, // Include docId from Firestore
+        ...doc.data(),
+      } as Event));
       setEvents(eventsList);
     };
 
     fetchEvents();
   }, []);
+
+  const handleEventClick = (event: Event) => {
+    router.push(`/eventDetails?docId=${encodeURIComponent(event.docId)}`);
+  };
 
   return (
     <AppLayout pageTitle="Past Events">
@@ -34,7 +43,12 @@ export default function PastEvents() {
         <div className="background-screen past-events-background">
           <ul className="events-list">
             {events.map((event, index) => (
-              <li key={index} className="event-item">
+              <li
+                key={index}
+                className="event-item"
+                onClick={() => handleEventClick(event)}
+                style={{ cursor: "pointer" }}
+              >
                 <p><strong>{event.eventName} :</strong> {event.eventTitle}</p>
                 {event.eventPosterURL && (
                   <CustomImage

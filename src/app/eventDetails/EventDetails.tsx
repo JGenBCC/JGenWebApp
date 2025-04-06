@@ -115,7 +115,22 @@ export default function EventDetails() {
               height={400}
             />
           )}
-          {isAdmin ? (
+          {isAttendanceOpen && (
+            <div className="attendance-toggle">
+              <label>
+                <span>Mark Attendance:</span>
+                <Switch
+                  onChange={markAttendance}
+                  checked={isMarked} // Reflect attendance status from Firestore
+                  onColor="#86d3ff"
+                  offColor="#ccc"
+                  checkedIcon={false}
+                  uncheckedIcon={false}
+                />
+              </label>
+            </div>
+          )}
+          {isAdmin && (
             <div className="attendance-toggle">
               <label>
                 <span>Open for Attendance:</span>
@@ -129,22 +144,6 @@ export default function EventDetails() {
                 />
               </label>
             </div>
-          ) : (
-            isAttendanceOpen && (
-              <div className="attendance-toggle">
-                <label>
-                  <span>Mark Attendance:</span>
-                  <Switch
-                    onChange={markAttendance}
-                    checked={isMarked} // Reflect attendance status from Firestore
-                    onColor="#86d3ff"
-                    offColor="#ccc"
-                    checkedIcon={false}
-                    uncheckedIcon={false}
-                  />
-                </label>
-              </div>
-            )
           )}
         </div>
       </main>

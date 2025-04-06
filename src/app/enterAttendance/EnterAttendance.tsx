@@ -58,7 +58,7 @@ export default function EnterAttendance() {
           <ul>
             {events.map((event) => (
               <li
-                key={event.eventName}
+                key={event.docId} // Use docId as the unique key
                 onClick={() => handleEventClick(event)}
                 style={{ cursor: "pointer" }}
               >

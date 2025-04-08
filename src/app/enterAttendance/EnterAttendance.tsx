@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 import { firebaseApp } from "../../lib/firebase/clientApp";
-import Image from "next/image";
+import CustomImage from "../../components/CustomImage";
 import AppLayout from "../components/AppLayout";
 import { useRouter } from "next/navigation";
 
@@ -66,7 +66,7 @@ export default function EnterAttendance() {
                 <p><strong>Title:</strong> {event.eventTitle}</p>
                 <p><strong>Date:</strong> {event.eventDate}</p>
                 {event.eventPosterURL && (
-                  <Image
+                  <CustomImage
                     src={event.eventPosterURL}
                     alt={`${event.eventTitle} poster`}
                     width={200}

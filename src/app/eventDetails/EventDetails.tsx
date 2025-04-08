@@ -184,7 +184,7 @@ export default function EventDetails() {
               </label>
             </div>
           )}
-          {attendees.length > 0 && (
+          {isAdmin && attendees.length > 0 && (
             <div className="attendees-list">
               <h2>Attendees</h2>
               <ul>

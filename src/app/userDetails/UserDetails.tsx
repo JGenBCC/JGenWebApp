@@ -2,10 +2,11 @@
 
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getFirestore, collection, query, where, getDocs, doc, getDoc } from "firebase/firestore";
+import { getFirestore, collection, query, where, getDocs, doc, getDoc, updateDoc } from "firebase/firestore";
 import { firebaseApp } from "../../lib/firebase/clientApp";
 import AppLayout from "../components/AppLayout";
 import CustomImage from "../../components/CustomImage";
+import { useAuth } from "../../context/AuthContext"; // Import AuthContext to get logged-in user details
 
 const db = getFirestore(firebaseApp);
 
@@ -32,6 +33,9 @@ export default function UserDetails() {
   const userPhone = searchParams.get("phone");
   const [user, setUser] = useState<User | null>(null);
   const [events, setEvents] = useState<Event[]>([]); // State to store attended events
+  const [isAdmin, setIsAdmin] = useState(false); // State to track if the logged-in user is an admin
+  const [newUserType, setNewUserType] = useState(user?.userType || ""); // State to store the selected user type
+  const { user: loggedInUser } = useAuth(); // Get logged-in user details from AuthContext
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -73,9 +77,29 @@ export default function UserDetails() {
       setEvents(eventsList.filter((event) => event !== null) as Event[]); // Filter out null values
     };
 
+    const checkAdmin = () => {
+      setIsAdmin(loggedInUser?.userType === "admin"); // Check if the logged-in user is an admin
+    };
+
     fetchUser();
     fetchAttendedEvents();
-  }, [userPhone]);
+    checkAdmin();
+  }, [userPhone, loggedInUser]);
+
+  // Function to handle user type update
+  const updateUserType = async () => {
+    if (!user || !newUserType) return;
+
+    const userQuery = query(collection(db, "users"), where("phone", "==", user.phone));
+    const querySnapshot = await getDocs(userQuery);
+
+    if (!querySnapshot.empty) {
+      const userDocRef = querySnapshot.docs[0].ref;
+      await updateDoc(userDocRef, { userType: newUserType });
+      setUser((prev) => prev && { ...prev, userType: newUserType }); // Update local state
+      alert("User type updated successfully!");
+    }
+  };
 
   if (!user) {
     return <AppLayout pageTitle="User Details"><p>Loading...</p></AppLayout>;
@@ -122,6 +146,20 @@ export default function UserDetails() {
               width={200}
               height={200}
             />
+          )}
+          {isAdmin && (
+            <div className="user-type-update">
+              <h3>Change User Type</h3>
+              <select
+                value={newUserType}
+                onChange={(e) => setNewUserType(e.target.value)}
+              >
+                <option value="admin">Admin</option>
+                <option value="coord">Coordinator</option>
+                <option value="regular">Regular User</option>
+              </select>
+              <button onClick={updateUserType}>Update</button>
+            </div>
           )}
           {events.length > 0 && (
             <div className="attended-events">

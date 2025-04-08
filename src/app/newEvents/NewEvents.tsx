@@ -52,7 +52,18 @@ export default function NewEvents() {
                 onClick={() => handleEventClick(event)}
                 style={{ cursor: "pointer" }}
               >
-                <p><strong>{event.eventName} :</strong> {event.eventTitle}</p>
+                <p>
+                  <strong>{event.eventName} :</strong> {event.eventTitle}
+                </p>
+                <p>
+                  {new Date(event.eventDate).toLocaleString("en-US", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })} {/* Display event date in dd-MMM-yyyy format with time */}
+                </p>
                 {event.eventPosterURL && (
                   <CustomImage
                     src={event.eventPosterURL}

@@ -14,6 +14,7 @@ interface Event {
   eventName: string;
   eventTitle: string;
   eventPosterURL: string;
+  eventDate: string; // Add eventDate to the Event interface
 }
 
 export default function PastEvents() {
@@ -23,11 +24,12 @@ export default function PastEvents() {
   useEffect(() => {
     const fetchEvents = async () => {
       const querySnapshot = await getDocs(collection(db, "events"));
+      const now = new Date();
       const eventsList = querySnapshot.docs.map(doc => ({
         docId: doc.id, // Include docId from Firestore
         ...doc.data(),
       } as Event));
-      setEvents(eventsList);
+      setEvents(eventsList.filter(event => new Date(event.eventDate) <= now)); // Filter past events
     };
 
     fetchEvents();
@@ -50,6 +52,15 @@ export default function PastEvents() {
                 style={{ cursor: "pointer" }}
               >
                 <p><strong>{event.eventName} :</strong> {event.eventTitle}</p>
+                <p>
+                  {new Date(event.eventDate).toLocaleString("en-US", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })} {/* Display event date in dd-MMM-yyyy format with time */}
+                </p>
                 {event.eventPosterURL && (
                   <CustomImage
                     src={event.eventPosterURL}

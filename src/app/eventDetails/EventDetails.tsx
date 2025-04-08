@@ -2,7 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getFirestore, doc, getDoc, updateDoc, collection, setDoc, deleteDoc } from "firebase/firestore"; // Import deleteDoc for deleting attendance records
+import { getFirestore, doc, getDoc, updateDoc, collection, setDoc, deleteDoc, QuerySnapshot, query, where, getDocs } from "firebase/firestore"; // Import Firestore query functions
 import { firebaseApp } from "../../lib/firebase/clientApp";
 import AppLayout from "../components/AppLayout";
 import CustomImage from "../../components/CustomImage";
@@ -23,11 +23,17 @@ interface Event {
   isAttendanceOpen: boolean; // New field to track attendance status
 }
 
+interface Attendee {
+  phoneNumber: string;
+  name: string; // Add name field for attendees
+}
+
 export default function EventDetails() {
   const searchParams = useSearchParams();
   const eventDocId = searchParams.get("docId");
   const [event, setEvent] = useState<Event | null>(null);
   const [isMarked, setIsMarked] = useState(false); // Track if attendance is marked
+  const [attendees, setAttendees] = useState<Attendee[]>([]); // Update state to store attendees with names
   const { user } = useAuth(); // Get user details from AuthContext
 
   useEffect(() => {
@@ -55,8 +61,41 @@ export default function EventDetails() {
       setIsMarked(attendanceSnap.exists()); // Set attendance status based on Firestore data
     };
 
+    const fetchAttendees = async () => {
+      if (!eventDocId) return;
+
+      const attendanceQuery = query(
+        collection(db, "attendance"),
+        where("eventId", "==", eventDocId)
+      );
+      const querySnapshot: QuerySnapshot = await getDocs(attendanceQuery);
+
+      const attendeesList = await Promise.all(
+        querySnapshot.docs.map(async (attendanceDoc) => {
+          const data = attendanceDoc.data();
+
+          // Append +91 to the phone number before querying the users collection
+          const userQuery = query(
+            collection(db, "users"),
+            where("phone", "==", `+91${data.phoneNumber}`)
+          );
+          const userSnapshot = await getDocs(userQuery);
+
+          const userName =
+            !userSnapshot.empty
+              ? userSnapshot.docs[0].data().displayName // Get the name from the first matching document
+              : "Unknown"; // Default to "Unknown" if no user is found
+
+          return { phoneNumber: data.phoneNumber, name: userName };
+        })
+      );
+
+      setAttendees(attendeesList); // Update the attendees state
+    };
+
     fetchEvent();
     checkAttendance();
+    fetchAttendees();
   }, [eventDocId, user]);
 
   const toggleAttendance = async (checked: boolean) => {
@@ -143,6 +182,20 @@ export default function EventDetails() {
                   uncheckedIcon={false}
                 />
               </label>
+            </div>
+          )}
+          {attendees.length > 0 && (
+            <div className="attendees-list">
+              <h2>Attendees</h2>
+              <ul>
+                {attendees.map((attendee, index) => (
+                  <li key={index}>
+                    <a href={`/userDetails?phone=${encodeURIComponent(`+91${attendee.phoneNumber}`)}`}>
+                      {attendee.name} ({attendee.phoneNumber})
+                    </a>
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
         </div>

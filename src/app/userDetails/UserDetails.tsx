@@ -2,7 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
+import { getFirestore, collection, query, where, getDocs, doc, getDoc } from "firebase/firestore";
 import { firebaseApp } from "../../lib/firebase/clientApp";
 import AppLayout from "../components/AppLayout";
 import CustomImage from "../../components/CustomImage";
@@ -21,10 +21,17 @@ interface User {
   userType: string;
 }
 
+interface Event {
+  eventId: string;
+  eventName: string;
+  eventDate: string; // Add eventDate to include event timings
+}
+
 export default function UserDetails() {
   const searchParams = useSearchParams();
   const userPhone = searchParams.get("phone");
   const [user, setUser] = useState<User | null>(null);
+  const [events, setEvents] = useState<Event[]>([]); // State to store attended events
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -40,7 +47,34 @@ export default function UserDetails() {
       }
     };
 
+    const fetchAttendedEvents = async () => {
+      if (!userPhone) return;
+
+      const attendanceQuery = query(
+        collection(db, "attendance"),
+        where("phoneNumber", "==", userPhone.replace("+91", "")) // Match attendance records by phone number
+      );
+      const attendanceSnapshot = await getDocs(attendanceQuery);
+
+      const eventsList = await Promise.all(
+        attendanceSnapshot.docs.map(async (attendanceDoc) => {
+          const data = attendanceDoc.data();
+          const eventRef = doc(db, "events", data.eventId);
+          const eventSnap = await getDoc(eventRef);
+
+          if (eventSnap.exists()) {
+            const eventData = eventSnap.data();
+            return { eventId: data.eventId, eventName: eventData.eventName, eventDate: eventData.eventDate };
+          }
+          return null;
+        })
+      );
+
+      setEvents(eventsList.filter((event) => event !== null) as Event[]); // Filter out null values
+    };
+
     fetchUser();
+    fetchAttendedEvents();
   }, [userPhone]);
 
   if (!user) {
@@ -53,6 +87,19 @@ export default function UserDetails() {
     const day = date.getDate().toString().padStart(2, "0");
     const month = (date.getMonth() + 1).toString().padStart(2, "0");
     return `${day}-${month}-${date.getFullYear()}`;
+  };
+
+  // Helper function to format event date as "dd-mm-yyyy hh:mm AM/PM"
+  const formatEventDate = (eventDate: string): string => {
+    const date = new Date(eventDate);
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const year = date.getFullYear();
+    const hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    const period = hours >= 12 ? "PM" : "AM";
+    const formattedHours = (hours % 12 || 12).toString().padStart(2, "0");
+    return `${day}-${month}-${year} ${formattedHours}:${minutes} ${period}`;
   };
 
   return (
@@ -75,6 +122,20 @@ export default function UserDetails() {
               width={200}
               height={200}
             />
+          )}
+          {events.length > 0 && (
+            <div className="attended-events">
+              <h2>Attended Events</h2>
+              <ul>
+                {events.map((event) => (
+                  <li key={event.eventId}>
+                    <a href={`/eventDetails?docId=${event.eventId}`}>
+                      {event.eventName} - {formatEventDate(event.eventDate)}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
         </div>
       </main>

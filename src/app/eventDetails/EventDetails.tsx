@@ -127,6 +127,29 @@ export default function EventDetails() {
     }
   };
 
+  const deleteEvent = async () => {
+    if (!event || !event.docId) return;
+
+    const confirmDelete = window.confirm("Are you sure you want to delete this event?");
+    if (confirmDelete) {
+      // Delete all attendance entries associated with the event
+      const attendanceQuery = query(
+        collection(db, "attendance"),
+        where("eventId", "==", event.docId)
+      );
+      const querySnapshot = await getDocs(attendanceQuery);
+
+      const deletePromises = querySnapshot.docs.map((doc) => deleteDoc(doc.ref));
+      await Promise.all(deletePromises);
+
+      // Delete the event document
+      await deleteDoc(doc(db, "events", event.docId));
+
+      alert("Event and associated attendance entries deleted successfully.");
+      window.location.href = "/"; // Redirect to the homepage or another page
+    }
+  };
+
   // Ensure `event.isAttendanceOpen` is always defined
   const isAttendanceOpen = event?.isAttendanceOpen ?? false;
   const isAdmin = user?.userType === "admin";
@@ -139,6 +162,24 @@ export default function EventDetails() {
     <AppLayout pageTitle={event.eventName}>
       <main>
         <div className="event-details">
+          {isAdmin && (
+            <button
+              className="delete-event-button"
+              onClick={deleteEvent}
+              style={{
+                position: "absolute",
+                top: "100px",
+                right: "10px",
+                backgroundColor: "red",
+                color: "white",
+                border: "none",
+                padding: "10px",
+                cursor: "pointer",
+              }}
+            >
+              Delete Event
+            </button>
+          )}
           <h1>{event.eventName}</h1>
           <p><strong>Title:</strong> {event.eventTitle}</p>
           <p><strong>Date:</strong> {event.eventDate}</p>

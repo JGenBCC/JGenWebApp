@@ -29,6 +29,8 @@ interface User {
 
 export default function UserListClient() {
   const [users, setUsers] = useState<User[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<User[]>([]); // New state for filtered users
+  const [genderFilter, setGenderFilter] = useState<string>(""); // New state for gender filter
   const { user, loading } = useAuth(); // using current user from AuthProvider
   const router = useRouter();
 
@@ -71,11 +73,22 @@ export default function UserListClient() {
         const querySnapshot = await getDocs(q);
         usersList = querySnapshot.docs.map(doc => doc.data() as User);
       }
+
       setUsers(usersList);
+      setFilteredUsers(usersList); // Initialize filtered users with the full list
     };
 
     fetchUsers();
   }, [user, loading]);
+
+  useEffect(() => {
+    // Apply gender filter locally
+    if (genderFilter) {
+      setFilteredUsers(users.filter(user => user.gender === genderFilter));
+    } else {
+      setFilteredUsers(users); // Reset to full list if no filter is applied
+    }
+  }, [genderFilter, users]);
 
   const handleUserClick = (userPhone: string) => {
     router.push(`/userDetails?phone=${encodeURIComponent(userPhone)}`);
@@ -86,9 +99,18 @@ export default function UserListClient() {
       <main className="content userlist-content-full">
         <div className="background-screen userlist-background">
           <div className="top-right">
+            <select
+              value={genderFilter}
+              onChange={(e) => setGenderFilter(e.target.value)}
+              className="gender-filter-dropdown"
+            >
+              <option value="">All</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
           </div>
           <ul className="user-list">
-            {users.map((user, index) => (
+            {filteredUsers.map((user, index) => (
               <li
                 key={index}
                 className="user-item"

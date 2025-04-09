@@ -104,7 +104,9 @@ export default function UserListClient() {
         <div className="background-screen userlist-background">
           {user?.userType === "admin" && ( // Show gender filter only for admin users
             <div className="top-right">
+              <label htmlFor="gender-filter" style={{ marginRight: "8px" }}>Gender:</label>
               <select
+                id="gender-filter"
                 value={genderFilter}
                 onChange={(e) => setGenderFilter(e.target.value)}
                 className="gender-filter-dropdown"

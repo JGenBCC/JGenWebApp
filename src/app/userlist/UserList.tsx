@@ -83,11 +83,15 @@ export default function UserListClient() {
 
   useEffect(() => {
     // Apply gender filter locally
+    let filtered = [...users];
     if (genderFilter) {
-      setFilteredUsers(users.filter(user => user.gender === genderFilter));
-    } else {
-      setFilteredUsers(users); // Reset to full list if no filter is applied
+      filtered = filtered.filter(user => user.gender === genderFilter);
     }
+
+    // Sort users by their displayName
+    filtered.sort((a, b) => a.displayName.localeCompare(b.displayName));
+
+    setFilteredUsers(filtered);
   }, [genderFilter, users]);
 
   const handleUserClick = (userPhone: string) => {

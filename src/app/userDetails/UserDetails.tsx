@@ -151,7 +151,7 @@ export default function UserDetails() {
             <div className="user-type-update">
               <h3>Change User Type</h3>
               <select
-                value={newUserType}
+                value={newUserType || user.userType} // Ensure the dropdown reflects the current user type
                 onChange={(e) => setNewUserType(e.target.value)}
               >
                 <option value="admin">Admin</option>

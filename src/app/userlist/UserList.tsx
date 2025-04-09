@@ -68,8 +68,8 @@ export default function UserListClient() {
         const uniqueUsers = Array.from(new Map(merged.map(u => [u.phone, u])).values());
         usersList = uniqueUsers;
       } else {
-        // Regular user gets only their own document (using documentId)
-        const q = query(collection(db, "users"), where(documentId(), "==", user.userDocId));
+        // Regular user gets all users of the same gender
+        const q = query(collection(db, "users"), where("gender", "==", user.gender));
         const querySnapshot = await getDocs(q);
         usersList = querySnapshot.docs.map(doc => doc.data() as User);
       }
@@ -102,17 +102,19 @@ export default function UserListClient() {
     <AppLayout pageTitle="Added Members">
       <main className="content userlist-content-full">
         <div className="background-screen userlist-background">
-          <div className="top-right">
-            <select
-              value={genderFilter}
-              onChange={(e) => setGenderFilter(e.target.value)}
-              className="gender-filter-dropdown"
-            >
-              <option value="">All</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-            </select>
-          </div>
+          {user?.userType === "admin" && ( // Show gender filter only for admin users
+            <div className="top-right">
+              <select
+                value={genderFilter}
+                onChange={(e) => setGenderFilter(e.target.value)}
+                className="gender-filter-dropdown"
+              >
+                <option value="">All</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
+            </div>
+          )}
           <ul className="user-list">
             {filteredUsers.map((user, index) => (
               <li

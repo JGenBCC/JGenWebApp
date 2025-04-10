@@ -159,7 +159,7 @@ export default function EventDetails() {
   }
 
   return (
-    <AppLayout pageTitle={event.eventName}>
+    <AppLayout pageTitle="Event Details"> {/* Updated heading */}
       <main>
         <div className="event-details">
           {isAdmin && (
@@ -198,7 +198,7 @@ export default function EventDetails() {
           {isAttendanceOpen && (
             <div className="attendance-toggle">
               <label>
-                <span>Mark Attendance:</span>
+                <span>Mark My Attendance:</span>
                 <Switch
                   onChange={markAttendance}
                   checked={isMarked} // Reflect attendance status from Firestore

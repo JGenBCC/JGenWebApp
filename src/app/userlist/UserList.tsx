@@ -31,6 +31,7 @@ export default function UserListClient() {
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]); // New state for filtered users
   const [genderFilter, setGenderFilter] = useState<string>(""); // New state for gender filter
+  const [userTypeFilter, setUserTypeFilter] = useState<string>(""); // New state for user type filter
   const { user, loading } = useAuth(); // using current user from AuthProvider
   const router = useRouter();
 
@@ -82,17 +83,20 @@ export default function UserListClient() {
   }, [user, loading]);
 
   useEffect(() => {
-    // Apply gender filter locally
+    // Apply gender and user type filters locally
     let filtered = [...users];
     if (genderFilter) {
       filtered = filtered.filter(user => user.gender === genderFilter);
+    }
+    if (userTypeFilter) {
+      filtered = filtered.filter(user => user.userType === userTypeFilter);
     }
 
     // Sort users by their displayName
     filtered.sort((a, b) => a.displayName.localeCompare(b.displayName));
 
     setFilteredUsers(filtered);
-  }, [genderFilter, users]);
+  }, [genderFilter, userTypeFilter, users]);
 
   const handleUserClick = (userPhone: string) => {
     router.push(`/userDetails?phone=${encodeURIComponent(userPhone)}`);
@@ -102,7 +106,7 @@ export default function UserListClient() {
     <AppLayout pageTitle="Added Members">
       <main className="content userlist-content-full">
         <div className="background-screen userlist-background">
-          {user?.userType === "admin" && ( // Show gender filter only for admin users
+          {user?.userType === "admin" && ( // Show filters only for admin users
             <div className="top-right">
               <label htmlFor="gender-filter" style={{ marginRight: "8px" }}>Gender:</label>
               <select
@@ -114,6 +118,18 @@ export default function UserListClient() {
                 <option value="">All</option>
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
+              </select>
+              <label htmlFor="user-type-filter" style={{ marginLeft: "16px", marginRight: "8px" }}>User Type:</label>
+              <select
+                id="user-type-filter"
+                value={userTypeFilter}
+                onChange={(e) => setUserTypeFilter(e.target.value)}
+                className="user-type-filter-dropdown"
+              >
+                <option value="">All</option>
+                <option value="admin">Admin</option>
+                <option value="coord">Coord</option>
+                <option value="regular">Regular User</option>
               </select>
             </div>
           )}

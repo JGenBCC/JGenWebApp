@@ -20,6 +20,7 @@ interface User {
   collegeOrCompany: string;
   photoURL: string | null;
   userType: string;
+  assignedCoord?: string; // Add field to store assigned coordinator
 }
 
 interface Event {
@@ -36,6 +37,9 @@ export default function UserDetails() {
   const [isAdmin, setIsAdmin] = useState(false); // State to track if the logged-in user is an admin
   const [newUserType, setNewUserType] = useState(user?.userType || ""); // State to store the selected user type
   const { user: loggedInUser } = useAuth(); // Get logged-in user details from AuthContext
+  const [coords, setCoords] = useState<User[]>([]); // State to store list of coordinators
+  const [selectedCoord, setSelectedCoord] = useState(user?.assignedCoord || ""); // State for selected coordinator
+  const [assignedUsers, setAssignedUsers] = useState<User[]>([]); // State to store users assigned to the coordinator
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -81,10 +85,28 @@ export default function UserDetails() {
       setIsAdmin(loggedInUser?.userType === "admin"); // Check if the logged-in user is an admin
     };
 
+    const fetchCoords = async () => {
+      const q = query(collection(db, "users"), where("userType", "==", "coord")); // Fetch coordinators
+      const querySnapshot = await getDocs(q);
+      const coordList = querySnapshot.docs.map((doc) => doc.data() as User);
+      setCoords(coordList);
+    };
+
+    const fetchAssignedUsers = async () => {
+      if (user?.userType === "coord") {
+        const q = query(collection(db, "users"), where("assignedCoord", "==", user.phone)); // Fetch users assigned to this coordinator
+        const querySnapshot = await getDocs(q);
+        const usersList = querySnapshot.docs.map((doc) => doc.data() as User);
+        setAssignedUsers(usersList);
+      }
+    };
+
     fetchUser();
     fetchAttendedEvents();
     checkAdmin();
-  }, [userPhone, loggedInUser]);
+    fetchCoords();
+    fetchAssignedUsers();
+  }, [userPhone, loggedInUser, user]);
 
   // Function to handle user type update
   const updateUserType = async () => {
@@ -98,6 +120,21 @@ export default function UserDetails() {
       await updateDoc(userDocRef, { userType: newUserType });
       setUser((prev) => prev && { ...prev, userType: newUserType }); // Update local state
       alert("User type updated successfully!");
+    }
+  };
+
+  // Function to handle coordinator assignment
+  const assignCoord = async () => {
+    if (!user || !selectedCoord) return;
+
+    const userQuery = query(collection(db, "users"), where("phone", "==", user.phone));
+    const querySnapshot = await getDocs(userQuery);
+
+    if (!querySnapshot.empty) {
+      const userDocRef = querySnapshot.docs[0].ref;
+      await updateDoc(userDocRef, { assignedCoord: selectedCoord });
+      setUser((prev) => prev && { ...prev, assignedCoord: selectedCoord }); // Update local state
+      alert("Coordinator assigned successfully!");
     }
   };
 
@@ -131,13 +168,32 @@ export default function UserDetails() {
       <main>
         <div className="user-details">
           <h1>{user.displayName}</h1>
-          <p><strong>Phone:</strong> {user.phone}</p>
+          <p>
+            <strong>Phone:</strong>{" "}
+            {navigator.userAgent.toLowerCase().includes("android") ? (
+              <a href={`tel:${user.phone}`}>{user.phone}</a>
+            ) : (
+              user.phone
+            )}
+          </p>
           <p><strong>Date of Birth:</strong> {formatDOB(user.dob)}</p>
           <p><strong>Gender:</strong> {user.gender}</p>
           <p><strong>Place of Stay:</strong> {user.placeOfStay}</p>
           <p><strong>Education:</strong> {user.education}</p>
           <p><strong>College/Company:</strong> {user.collegeOrCompany}</p>
           <p><strong>User Type:</strong> {user.userType}</p>
+          {user.assignedCoord && (
+            <p>
+              <strong>Assigned Coordinator:</strong>{" "}
+              {coords.find(coord => coord.phone === user.assignedCoord) ? (
+                <a href={`/userDetails?phone=${encodeURIComponent(user.assignedCoord)}`}>
+                  {coords.find(coord => coord.phone === user.assignedCoord)?.displayName}
+                </a>
+              ) : (
+                "Unknown"
+              )}
+            </p>
+          )}
           {user.photoURL && (
             <CustomImage
               src={user.photoURL}
@@ -159,6 +215,39 @@ export default function UserDetails() {
                 <option value="regular">Regular User</option>
               </select>
               <button onClick={updateUserType}>Update</button>
+            </div>
+          )}
+          {(isAdmin || loggedInUser?.userType === "coord") ? (
+            user.userType === "regular" && (
+              <div className="assign-coord">
+                <h3>Assign Coordinator</h3>
+                <select
+                  value={selectedCoord || user.assignedCoord || ""}
+                  onChange={(e) => setSelectedCoord(e.target.value)}
+                >
+                  <option value="" disabled>Select a Coordinator</option>
+                  {coords.map((coord) => (
+                    <option key={coord.phone} value={coord.phone}>
+                      {coord.displayName}
+                    </option>
+                  ))}
+                </select>
+                <button onClick={assignCoord}>Assign</button>
+              </div>
+            )
+          ) : null}
+          {user.userType === "coord" && assignedUsers.length > 0 && (
+            <div className="assigned-users">
+              <h3>Group Users:</h3>
+              <ul>
+                {assignedUsers.map((assignedUser) => (
+                  <li key={assignedUser.phone}>
+                    <a href={`/userDetails?phone=${encodeURIComponent(assignedUser.phone)}`}>
+                      {assignedUser.displayName}
+                    </a>
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
           {events.length > 0 && (

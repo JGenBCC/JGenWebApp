@@ -92,8 +92,12 @@ export default function UserListClient() {
       filtered = filtered.filter(user => user.userType === userTypeFilter);
     }
 
-    // Sort users by their displayName
-    filtered.sort((a, b) => a.displayName.localeCompare(b.displayName));
+    // Sort users by their displayName, handling null/undefined values
+    filtered.sort((a, b) => {
+      const nameA = a.displayName || ""; // Default to empty string if null/undefined
+      const nameB = b.displayName || ""; // Default to empty string if null/undefined
+      return nameA.localeCompare(nameB);
+    });
 
     setFilteredUsers(filtered);
   }, [genderFilter, userTypeFilter, users]);

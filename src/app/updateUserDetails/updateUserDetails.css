@@ -1,0 +1,18 @@
+.large-text {
+    font-size: 1.5rem; /* Increase font size */
+}
+
+.error-message-container {
+    padding-left: 1rem; /* Add space to the left */
+    padding-right: 1rem; /* Optional: Add space to the right for symmetry */
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem; /* Add spacing between fields */
+}
+
+.form-field label {
+    margin-bottom: 0.5rem; /* Add spacing between label and input */
+}

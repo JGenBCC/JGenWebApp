@@ -164,7 +164,7 @@ export default function UserDetails() {
   };
 
   return (
-    <AppLayout pageTitle={user.displayName}>
+    <AppLayout pageTitle="User Details">
       <main>
         <div className="user-details">
           <h1>{user.displayName}</h1>

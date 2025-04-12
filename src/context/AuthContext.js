@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { signOut, onAuthStateChanged, getRedirectResult, RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { auth } from "../../firebase";
-import { getFirestore, collection, getDocs, query, where, documentId, addDoc } from "firebase/firestore";
+import { getFirestore, collection, getDocs, query, where, documentId, addDoc, setDoc, doc } from "firebase/firestore";
 import { firebaseApp } from "../lib/firebase/clientApp"; // Import the firebase app instance
 
 const db = getFirestore(firebaseApp);
@@ -21,10 +21,8 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     // Remove email login redirect handling
-    // ...existing onAuthStateChanged code...
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
-        // ...optional phone-specific user properties...
         setUser(currentUser);
 
         const userQuery = query(collection(db, "users"), where("phone", "==", currentUser.phoneNumber));
@@ -61,7 +59,6 @@ export const AuthProvider = ({ children }) => {
     };
   }, []);
 
-  // Phone login function remains as is
   const loginWithPhone = async () => {
     let phoneInput = prompt("Enter your 10-digit phone number:");
     if (!phoneInput) return;
@@ -120,8 +117,9 @@ export const AuthProvider = ({ children }) => {
           };
 
           try {
-            const docRef = await addDoc(userRef, newUser); // Use addDoc here
-            console.log("New user created with ID:", docRef.id);
+            const docId = phoneNumber.replace("+91", ""); // Remove +91 from the phone number
+            const docRef = await setDoc(doc(userRef, docId), newUser); // Use setDoc with custom docId
+            console.log("New user created with ID:", docId);
 
             // Redirect to updateUserDetails.tsx page
             window.location.href = "/updateUserDetails";

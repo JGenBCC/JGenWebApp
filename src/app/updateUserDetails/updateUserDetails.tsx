@@ -8,7 +8,9 @@ import Image from "next/image";
 import { compressImage } from "../utils";
 import AppLayout from "../components/AppLayout";  // Use AppLayout for proper sidebar toggle
 import CustomImage from "../../components/CustomImage";
-// ...existing imports...
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "./updateUserDetails.css"; // Import CSS for styling
 
 export default function UpdateUserDetailsForm() {
     const { user, loading } = useAuth();
@@ -22,6 +24,7 @@ export default function UpdateUserDetailsForm() {
     const [docId, setDocId] = useState<string>("");
     const [photoURL, setPhotoURL] = useState("");
     const [originalData, setOriginalData] = useState<any>({});
+    const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
         if (loading || !user || !user.userDocId) return;
@@ -52,6 +55,18 @@ export default function UpdateUserDetailsForm() {
         }
         fetchUser();
     }, [user?.userDocId, loading]);
+
+    useEffect(() => {
+        if (!loading && user) {
+            const isFormIncomplete = !displayName || !dob || !gender || !placeOfStay || !education || !collegeOrCompany;
+
+            if (isFormIncomplete) {
+                setErrorMessage("Please fill details below to continue");
+            } else {
+                setErrorMessage(""); // Clear error message if all fields are filled
+            }
+        }
+    }, [loading, user, displayName, dob, gender, placeOfStay, education, collegeOrCompany]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -89,6 +104,9 @@ export default function UpdateUserDetailsForm() {
             if (user?.userDocId) {
                 await updateDoc(doc(db, "users", user.userDocId), updatePayload);
                 console.log("Document successfully updated!");
+                toast.success("User details updated successfully!", {
+                    onClose: () => window.location.reload() // Reload the page after toast is closed
+                }); // Display success toast
             } else {
                 console.error("User document not found!");
             }
@@ -99,69 +117,72 @@ export default function UpdateUserDetailsForm() {
             setEducation("");
             setCollegeOrCompany("");
             setPhoto(null);
+            setErrorMessage(""); // Clear error message after successful update
         } catch (error) {
             console.error("Error updating document: ", error);
+            toast.error("Failed to update user details."); // Display error toast
         }
     };
 
     return (
-        <AppLayout pageTitle="Update User Details">
-            <div className="background-screen">
-                <form onSubmit={handleSubmit} className="user-form">
-                    {/* ...existing form fields... */}
-                    <label className="form-field">
-                        Display Name:
-                        <input type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)} required />
-                        {/* ...existing code... */}
-                    </label>
-                    <label className="form-field">
-                        Date of Birth:
-                        <input type="date" value={dob} onChange={(e) => setDob(e.target.value)} required />
-                        {/* ...existing code... */}
-                    </label>
-                    <label className="form-field">
-                        Gender:
-                        <select value={gender} onChange={(e) => setGender(e.target.value)} required>
-                            <option value="">Select</option>
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
-                        </select>
-                        {/* ...existing code... */}
-                    </label>
-                    <label className="form-field">
-                        Place of Stay in Coimbatore:
-                        <input type="text" value={placeOfStay} onChange={(e) => setPlaceOfStay(e.target.value)} required />
-                        {/* ...existing code... */}
-                    </label>
-                    <label className="form-field">
-                        Education / Profession Details:
-                        <input type="text" value={education} onChange={(e) => setEducation(e.target.value)} required />
-                        {/* ...existing code... */}
-                    </label>
-                    <label className="form-field">
-                        College / Company Name:
-                        <input type="text" value={collegeOrCompany} onChange={(e) => setCollegeOrCompany(e.target.value)} required />
-                        {/* ...existing code... */}
-                    </label>
-                    <label className="form-field">
-                        Photo:
-                        <input type="file" onChange={(e) => setPhoto(e.target.files ? e.target.files[0] : null)} />
-                        {/* ...existing code... */}
-                    </label>
-                    {photoURL && (
-                        <div className="user-photo-container">
-                            <CustomImage
-                                src={photoURL}
-                                alt={`${displayName}'s photo`}
-                                className="user-photo"
-                                width={100}
-                                height={100}
-                            />
+        <>
+            <AppLayout pageTitle="Update User Details">
+                <div className="background-screen">
+                    {errorMessage && (
+                        <div className="error-message-container">
+                            <p className="error-message large-text"><strong>{errorMessage}</strong></p>
+                            <br/>
                         </div>
                     )}
-                    <button type="submit">Update</button>
-                </form>
-            </div>
-        </AppLayout>
+                    <form onSubmit={handleSubmit} className="user-form">
+                        <label className="form-field">
+                            Display Name:
+                            <input type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)} required />
+                        </label>
+                        <label className="form-field">
+                            Date of Birth:
+                            <input type="date" value={dob} onChange={(e) => setDob(e.target.value)} required />
+                        </label>
+                        <label className="form-field">
+                            Gender:
+                            <select value={gender} onChange={(e) => setGender(e.target.value)} required>
+                                <option value="">Select</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                        </label>
+                        <label className="form-field">
+                            Place of Stay in Coimbatore:
+                            <input type="text" value={placeOfStay} onChange={(e) => setPlaceOfStay(e.target.value)} required />
+                        </label>
+                        <label className="form-field">
+                            Education / Profession Details:
+                            <input type="text" value={education} onChange={(e) => setEducation(e.target.value)} required />
+                        </label>
+                        <label className="form-field">
+                            College / Company Name:
+                            <input type="text" value={collegeOrCompany} onChange={(e) => setCollegeOrCompany(e.target.value)} required />
+                        </label>
+                        <label className="form-field">
+                            Photo:
+                            <input type="file" onChange={(e) => setPhoto(e.target.files ? e.target.files[0] : null)} />
+                        </label>
+                        {photoURL && (
+                            <div className="user-photo-container">
+                                <CustomImage
+                                    src={photoURL}
+                                    alt={`${displayName}'s photo`}
+                                    className="user-photo"
+                                    width={100}
+                                    height={100}
+                                />
+                            </div>
+                        )}
+                        <button type="submit">Update</button>
+                    </form>
+                </div>
+            </AppLayout>
+            <ToastContainer /> {/* Add ToastContainer to render toast messages */}
+        </>
     );
 }

@@ -25,6 +25,7 @@ interface User {
     userType: string;
     coordDocId: string;
     userDocId: string;
+    isApproved?: boolean; // Added optional isApproved property
 }
 
 export default function UserListClient() {
@@ -48,14 +49,24 @@ export default function UserListClient() {
 
     const fetchUsers = async () => {
       let usersList: User[] = [];
+      const userDocRef = collection(db, "users");
+
+      // Fetch the latest user data to ensure isApproved is up-to-date
+      const userSnapshot = await getDocs(query(userDocRef, where(documentId(), "==", user.userDocId)));
+      const updatedUser = userSnapshot.docs[0]?.data() as User;
+
+      if (updatedUser) {
+        user.isApproved = updatedUser.isApproved; // Update the local user object
+      }
+
       if (user.userType === "admin") {
         // Admin gets all users
         const querySnapshot = await getDocs(collection(db, "users"));
         usersList = querySnapshot.docs.map(doc => doc.data() as User);
       } else if (user.userType === "coord") {
         // Coord gets his own document and users where coordDocId equals his userDocId
-        const ownQuery = query(collection(db, "users"), where(documentId(), "==", user.userDocId));
-        const coordQuery = query(collection(db, "users"), where("coordDocId", "==", user.userDocId));
+        const ownQuery = query(userDocRef, where(documentId(), "==", user.userDocId));
+        const coordQuery = query(userDocRef, where("coordDocId", "==", user.userDocId));
         
         const [ownSnapshot, coordSnapshot] = await Promise.all([
           getDocs(ownQuery),
@@ -69,10 +80,12 @@ export default function UserListClient() {
         const uniqueUsers = Array.from(new Map(merged.map(u => [u.phone, u])).values());
         usersList = uniqueUsers;
       } else {
-        // Regular user gets all users of the same gender
-        const q = query(collection(db, "users"), where("gender", "==", user.gender));
-        const querySnapshot = await getDocs(q);
-        usersList = querySnapshot.docs.map(doc => doc.data() as User);
+        // Regular user gets all users of the same gender if the user is approved
+        if (user.isApproved) {
+          const q = query(userDocRef, where("gender", "==", user.gender));
+          const querySnapshot = await getDocs(q);
+          usersList = querySnapshot.docs.map(doc => doc.data() as User);
+        }
       }
 
       setUsers(usersList);
@@ -110,63 +123,69 @@ export default function UserListClient() {
     <AppLayout pageTitle="Added Members">
       <main className="content userlist-content-full">
         <div className="background-screen userlist-background">
-          {user?.userType === "admin" && ( // Show filters only for admin users
-            <div className="top-right">
-              <label htmlFor="gender-filter" style={{ marginRight: "8px" }}>Gender:</label>
-              <select
-                id="gender-filter"
-                value={genderFilter}
-                onChange={(e) => setGenderFilter(e.target.value)}
-                className="gender-filter-dropdown"
-              >
-                <option value="">All</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-              </select>
-              <label htmlFor="user-type-filter" style={{ marginLeft: "16px", marginRight: "8px" }}>User Type:</label>
-              <select
-                id="user-type-filter"
-                value={userTypeFilter}
-                onChange={(e) => setUserTypeFilter(e.target.value)}
-                className="user-type-filter-dropdown"
-              >
-                <option value="">All</option>
-                <option value="admin">Admin</option>
-                <option value="coord">Coord</option>
-                <option value="regular">Regular User</option>
-              </select>
-            </div>
-          )}
-          <ul className="user-list">
-            {filteredUsers.map((user, index) => (
-              <li
-                key={index}
-                className="user-item"
-                style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem", cursor: "pointer" }}
-                onClick={() => handleUserClick(user.phone)}
-              >
-                <div className="user-details">
-                  <p><strong>{index + 1}: {user.displayName}</strong></p>
-                  <p>{user.phone.startsWith("+91") ? user.phone.slice(3) : user.phone}</p>
-                  <p>{formatDOB(user.dob)}</p>
-                  <p>{user.placeOfStay}</p>
-                  <p>{user.education}</p>
-                  <p>{user.collegeOrCompany}</p>
+          {!user?.isApproved && user?.userType === "regular" ? ( // Show message for unapproved regular users
+            <p className="approval-message">You need to be approved to view other members.</p>
+          ) : (
+            <>
+              {user?.userType === "admin" && ( // Show filters only for admin users
+                <div className="top-right">
+                  <label htmlFor="gender-filter" style={{ marginRight: "8px" }}>Gender:</label>
+                  <select
+                    id="gender-filter"
+                    value={genderFilter}
+                    onChange={(e) => setGenderFilter(e.target.value)}
+                    className="gender-filter-dropdown"
+                  >
+                    <option value="">All</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                  </select>
+                  <label htmlFor="user-type-filter" style={{ marginLeft: "16px", marginRight: "8px" }}>User Type:</label>
+                  <select
+                    id="user-type-filter"
+                    value={userTypeFilter}
+                    onChange={(e) => setUserTypeFilter(e.target.value)}
+                    className="user-type-filter-dropdown"
+                  >
+                    <option value="">All</option>
+                    <option value="admin">Admin</option>
+                    <option value="coord">Coord</option>
+                    <option value="regular">Regular User</option>
+                  </select>
                 </div>
-                {user.photoURL && (
-                  <div className="user-photo-container">
-                    <CustomImage
-                      src={user.photoURL}
-                      alt={`${user.displayName}'s photo`}
-                      className="user-photo"
-                      width={100}
-                      height={100}
-                    />
-                  </div>
-                )}
-              </li>
-            ))}
-          </ul>
+              )}
+              <ul className="user-list">
+                {filteredUsers.map((user, index) => (
+                  <li
+                    key={index}
+                    className="user-item"
+                    style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem", cursor: "pointer" }}
+                    onClick={() => handleUserClick(user.phone)}
+                  >
+                    <div className="user-details">
+                      <p><strong>{index + 1}: {user.displayName}</strong></p>
+                      <p>{user.phone.startsWith("+91") ? user.phone.slice(3) : user.phone}</p>
+                      <p>{formatDOB(user.dob)}</p>
+                      <p>{user.placeOfStay}</p>
+                      <p>{user.education}</p>
+                      <p>{user.collegeOrCompany}</p>
+                    </div>
+                    {user.photoURL && (
+                      <div className="user-photo-container">
+                        <CustomImage
+                          src={user.photoURL}
+                          alt={`${user.displayName}'s photo`}
+                          className="user-photo"
+                          width={100}
+                          height={100}
+                        />
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
         </div>
       </main>
     </AppLayout>

@@ -7,6 +7,7 @@ import { firebaseApp } from "../../lib/firebase/clientApp";
 import AppLayout from "../components/AppLayout";
 import CustomImage from "../../components/CustomImage";
 import { useAuth } from "../../context/AuthContext"; // Import AuthContext to get logged-in user details
+import Switch from "react-switch"; // Import Switch component
 
 const db = getFirestore(firebaseApp);
 
@@ -21,6 +22,7 @@ interface User {
   photoURL: string | null;
   userType: string;
   assignedCoord?: string; // Add field to store assigned coordinator
+  isApproved?: boolean; // Add field to indicate approval status
 }
 
 interface Event {
@@ -45,11 +47,12 @@ export default function UserDetails() {
     const fetchUser = async () => {
       if (!userPhone) return;
 
-      const q = query(collection(db, "users"), where("phone", "==", userPhone));
-      const querySnapshot = await getDocs(q);
+      const userDocId = userPhone.replace("+91", ""); // Remove +91 to get the docId
+      const userDocRef = doc(db, "users", userDocId);
+      const userSnap = await getDoc(userDocRef);
 
-      if (!querySnapshot.empty) {
-        setUser(querySnapshot.docs[0].data() as User);
+      if (userSnap.exists()) {
+        setUser(userSnap.data() as User);
       } else {
         setUser(null); // Handle case where user is not found
       }
@@ -101,7 +104,7 @@ export default function UserDetails() {
   useEffect(() => {
     const fetchAssignedUsers = async () => {
       if (user?.userType === "coord") {
-        const q = query(collection(db, "users"), where("assignedCoord", "==", user.phone)); // Fetch users assigned to this coordinator
+        const q = query(collection(db, "users"), where("assignedCoord", "==", user.phone.replace("+91", ""))); // Use phone without +91
         const querySnapshot = await getDocs(q);
         const usersList = querySnapshot.docs.map((doc) => doc.data() as User);
         setAssignedUsers(usersList);
@@ -115,30 +118,22 @@ export default function UserDetails() {
   const updateUserType = async () => {
     if (!user || !newUserType) return;
 
-    const userQuery = query(collection(db, "users"), where("phone", "==", user.phone));
-    const querySnapshot = await getDocs(userQuery);
-
-    if (!querySnapshot.empty) {
-      const userDocRef = querySnapshot.docs[0].ref;
-      await updateDoc(userDocRef, { userType: newUserType });
-      setUser((prev) => prev && { ...prev, userType: newUserType }); // Update local state
-      alert("User type updated successfully!");
-    }
+    const userDocId = user.phone.replace("+91", ""); // Remove +91 to get the docId
+    const userDocRef = doc(db, "users", userDocId);
+    await updateDoc(userDocRef, { userType: newUserType });
+    setUser((prev) => prev && { ...prev, userType: newUserType }); // Update local state
+    alert("User type updated successfully!");
   };
 
   // Function to handle coordinator assignment
   const assignCoord = async () => {
     if (!user || !selectedCoord) return;
 
-    const userQuery = query(collection(db, "users"), where("phone", "==", user.phone));
-    const querySnapshot = await getDocs(userQuery);
-
-    if (!querySnapshot.empty) {
-      const userDocRef = querySnapshot.docs[0].ref;
-      await updateDoc(userDocRef, { assignedCoord: selectedCoord });
-      setUser((prev) => prev && { ...prev, assignedCoord: selectedCoord }); // Update local state
-      alert("Coordinator assigned successfully!");
-    }
+    const userDocId = user.phone.replace("+91", ""); // Remove +91 to get the docId
+    const userDocRef = doc(db, "users", userDocId);
+    await updateDoc(userDocRef, { assignedCoord: selectedCoord });
+    setUser((prev) => prev && { ...prev, assignedCoord: selectedCoord }); // Update local state
+    alert("Coordinator assigned successfully!");
   };
 
   if (!user) {
@@ -185,6 +180,9 @@ export default function UserDetails() {
           <p><strong>Education:</strong> {user.education}</p>
           <p><strong>College/Company:</strong> {user.collegeOrCompany}</p>
           <p><strong>User Type:</strong> {user.userType}</p>
+          {user.userType !== "admin" && user.hasOwnProperty("isApproved") && !user.isApproved && (
+            <p><strong>Approval Status:</strong> Pending Approval</p>
+          )}
           {user.assignedCoord && (
             <p>
               <strong>Assigned Coordinator:</strong>{" "}
@@ -218,6 +216,27 @@ export default function UserDetails() {
                 <option value="regular">Regular User</option>
               </select>
               <button onClick={updateUserType}>Update</button>
+            </div>
+          )}
+          {isAdmin && user.userType !== "admin" && (
+            <div className="approval-switch">
+              <h3>Approval Status</h3>
+              <label>
+                <Switch
+                  onChange={async (checked) => {
+                    const newApprovalStatus = checked;
+                    const userDocId = user.phone.replace("+91", ""); // Remove +91 to get the docId
+                    const userDocRef = doc(db, "users", userDocId);
+                    await updateDoc(userDocRef, { isApproved: newApprovalStatus });
+                    setUser((prev) => prev && { ...prev, isApproved: newApprovalStatus }); // Update local state
+                  }}
+                  checked={user.isApproved || false}
+                  onColor="#86d3ff"
+                  offColor="#ccc"
+                  checkedIcon={false}
+                  uncheckedIcon={false}
+                />
+              </label>
             </div>
           )}
           {(isAdmin || loggedInUser?.userType === "coord") ? (

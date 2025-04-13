@@ -92,6 +92,13 @@ export default function UserDetails() {
       setCoords(coordList);
     };
 
+    fetchUser();
+    fetchAttendedEvents();
+    checkAdmin();
+    fetchCoords();
+  }, [userPhone, loggedInUser]); // Removed `user` dependency to prevent unnecessary re-fetching
+
+  useEffect(() => {
     const fetchAssignedUsers = async () => {
       if (user?.userType === "coord") {
         const q = query(collection(db, "users"), where("assignedCoord", "==", user.phone)); // Fetch users assigned to this coordinator
@@ -101,12 +108,8 @@ export default function UserDetails() {
       }
     };
 
-    fetchUser();
-    fetchAttendedEvents();
-    checkAdmin();
-    fetchCoords();
     fetchAssignedUsers();
-  }, [userPhone, loggedInUser, user]);
+  }, [user]); // Separate effect for fetching assigned users to avoid re-triggering other fetches
 
   // Function to handle user type update
   const updateUserType = async () => {

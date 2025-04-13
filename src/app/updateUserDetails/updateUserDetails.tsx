@@ -143,14 +143,16 @@ export default function UpdateUserDetailsForm() {
                             Date of Birth:
                             <input type="date" value={dob} onChange={(e) => setDob(e.target.value)} required />
                         </label>
-                        <label className="form-field">
-                            Gender:
-                            <select value={gender} onChange={(e) => setGender(e.target.value)} required>
-                                <option value="">Select</option>
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                            </select>
-                        </label>
+                        {!originalData.gender && ( // Render only if gender is not present in Firestore
+                            <label className="form-field">
+                                Gender:
+                                <select value={gender} onChange={(e) => setGender(e.target.value)} required>
+                                    <option value="">Select</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                            </label>
+                        )}
                         <label className="form-field">
                             Place of Stay in Coimbatore:
                             <input type="text" value={placeOfStay} onChange={(e) => setPlaceOfStay(e.target.value)} required />

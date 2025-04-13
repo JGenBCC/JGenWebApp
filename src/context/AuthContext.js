@@ -114,6 +114,7 @@ export const AuthProvider = ({ children }) => {
             gender: null,
             photoURL: null,
             userType: "regular", // Default user type
+            isApproved: false, // New field to indicate admin approval is required
           };
 
           try {
